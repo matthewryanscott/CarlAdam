@@ -30,3 +30,7 @@ docker compose up
 ```
 
 Then browse to http://localhost:8000 to see the simulator in action.
+
+## Sponsors
+
+Initial work on the CarlAdam package was sponsored by [Routable](https://routable.com/).
