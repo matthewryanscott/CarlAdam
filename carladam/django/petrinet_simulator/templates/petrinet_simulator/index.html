@@ -1,0 +1,10 @@
+{% load petrinet_simulator %}
+<ul>
+    {% for net_name, cls in petrinets.items %}
+        <li>
+            <p>
+                <a href="{% url "simulator" net_name=net_name %}">{{ cls | net_title }} (<tt>{{ net_name }}</tt>)</a>
+            </p>
+        </li>
+    {% endfor %}
+</ul>

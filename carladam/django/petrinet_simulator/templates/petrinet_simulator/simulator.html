@@ -1,0 +1,98 @@
+{% load petrinet_simulator %}
+
+<div style="display: inline-block; vertical-align: top">
+    <p><tt>{{ net_name }}</tt>:<br>{{ net | net_title }}</p>
+
+    <p>{{ net | net_description | markdown }}</p>
+
+    <p><a href="{% url "index" %}">← Index of Petri nets</a></p>
+
+    <p>Example markings:</p>
+
+    <ul>
+        {% for name, marking in example_markings.items %}
+            <li><a href="?initial_marking={{ marking|marking_encoded }}">{{ name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div style="display: inline-block; vertical-align: top">
+    <div style="display: inline-block; vertical-align: top">
+        <p>Initial marking:</p>
+        <ul>
+            {% for place, tokens in initial_marking_items %}
+                <li>{{ place }}: {% for token in tokens %}{{ token }} {% endfor %}</li>
+            {% empty %}
+                <li>∅</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div style="display: inline-block; vertical-align: top">
+        <p>Transitions:</p>
+        <ul>
+            {% for transition in transitions %}
+                <li>{{ transition.name }}</li>
+            {% endfor %}
+            {% if enabled_transitions %}
+                <li>
+                    {% for transition in enabled_transitions %}
+                        <div>
+                            <a href="?initial_marking={{ initial_marking|marking_encoded }}&transitions={{ transition_ids }},{{ transition.id }}">
+                                <button>{{ transition.name }}</button>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </li>
+            {% else %}
+                <li><em>No transitions enabled</em></li>
+            {% endif %}
+        </ul>
+    </div>
+    <div style="display: inline-block; vertical-align: top">
+        <p>Current marking:</p>
+        <ul>
+            {% for place, tokens in current_marking_items %}
+                <li>{{ place.name }}: {% for token in tokens %}{{ token }} {% endfor %}</li>
+            {% empty %}
+                <li>∅</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div>
+    <div style="display: inline-block; vertical-align: top">
+        <p>Net with current marking:</p>
+        <div>
+            {% net_graph_image_data net=net initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}
+        </div>
+        <a target="_blank" href="{% net_graph_niolesk_url net=net initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}">
+            Edit GraphViz ↗
+        </a>
+    </div>
+
+    {% if enabled_transitions %}
+        <div style="display: inline-block; vertical-align: top">
+            <p>Enabled transitions:</p>
+
+            <div>
+                {% net_graph_image_data net=enabled_subnet initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}
+            </div>
+            <a target="_blank" href="{% net_graph_niolesk_url net=enabled_subnet initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}">
+                Edit GraphViz ↗
+            </a>
+        </div>
+    {% endif %}
+
+    {% if transitions %}
+        <div style="display: inline-block; vertical-align: top">
+            <p>Sequence diagram:</p>
+            <div>
+                {% net_run_sequence_diagram_image_data net=net initial_marking=initial_marking transitions=transitions %}
+            </div>
+            <a target="_blank" href="{% net_run_sequence_diagram_niolesk_url net=net initial_marking=initial_marking transitions=transitions %}">
+                Edit PlantUML ↗
+            </a>
+        </div>
+    {% endif %}
+</div>
