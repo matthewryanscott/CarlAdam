@@ -20,5 +20,13 @@ Check out the examples using the simulator:
 
 ```shell
 poetry install --with=simulator
-make petrinet-simulator
+make simulator
 ```
+
+Or use Docker:
+
+```shell
+docker compose up
+```
+
+Then browse to http://localhost:8000 to see the simulator in action.

@@ -17,7 +17,7 @@ from pyrsistent import PMap, thaw
 # Internal imports
 from carladam import Marking, PetriNet, Transition
 from carladam.diagram.digraph import graphviz_digraph
-from carladam.diagram.kroki import kroki_image_url, niolesk_edit_url
+from carladam.diagram.kroki import NIOLESK_KROKI_URL, kroki_image_url, niolesk_edit_url
 from carladam.diagram.sequence import plantuml_sequence_diagram
 from carladam.petrinet.marking import PMarking, pmarking
 from carladam.petrinet.types import PetriNetNode
@@ -71,7 +71,12 @@ def net_graph_niolesk_url(
         return f"?initial_marking={marking_encoded(initial_marking)}&transitions={transition_ids_str},{t.id}"
 
     diagram_source = graphviz_digraph(net, current_marking, legend=legend, transition_url_fn=transition_url_fn)
-    image_url = kroki_image_url(diagram_source=diagram_source, diagram_type="graphviz", image_format="svg")
+    image_url = kroki_image_url(
+        diagram_source=diagram_source,
+        diagram_type="graphviz",
+        image_format="svg",
+        base_url=NIOLESK_KROKI_URL,
+    )
     return niolesk_edit_url(image_url=image_url)
 
 
@@ -94,7 +99,12 @@ def net_run_sequence_diagram_niolesk_url(
     transitions: Sequence[Transition],
 ) -> str:
     diagram_source = plantuml_sequence_diagram(net=net, initial_marking=initial_marking, transitions=transitions)
-    image_url = kroki_image_url(diagram_source=diagram_source, diagram_type="plantuml", image_format="svg")
+    image_url = kroki_image_url(
+        diagram_source=diagram_source,
+        diagram_type="plantuml",
+        image_format="svg",
+        base_url=NIOLESK_KROKI_URL,
+    )
     return niolesk_edit_url(image_url=image_url)
 
 

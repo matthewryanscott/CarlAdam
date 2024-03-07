@@ -1,0 +1,27 @@
+services:
+  kroki:
+    image: "yuzutech/kroki:latest"
+    ports:
+      - "8001:8000"
+
+  niolesk:
+    image: "ghcr.io/webgiss/niolesk"
+    ports:
+      - "8002:80"
+    environment:
+      - "NIOLESK_KROKI_ENGINE=http://localhost:8001/"
+
+  simulator:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    command:
+      - "poetry run python -m carladam.django.simulator examples"
+    environment:
+      - "CARLADAM_LISTEN_ON=0.0.0.0:8000"
+      - "CARLADAM_KROKI_BASE_URL=http://kroki:8000/"
+      - "CARLADAM_NIOLESK_BASE_URL=http://localhost:8002/"
+      - "CARLADAM_NIOLESK_KROKI_URL=http://localhost:8001/"
+    volumes:
+      - .:/app

@@ -8,5 +8,5 @@ test:
 		carladam/util \
 		tests
 
-petrinet-simulator:
+simulator:
 	poetry run python -m carladam.django.simulator examples

@@ -1,6 +1,7 @@
 # Python imports
 import contextlib
 import importlib.util
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, Type
@@ -107,7 +108,9 @@ def main():
     print("\n".join(f"- {key}" for key in sorted(petrinets)))
     print("")
 
-    management.execute_from_command_line([arg0, "runserver"])
+    listen_on = os.getenv("CARLADAM_LISTEN_ON", "127.0.0.1:8000")
+
+    management.execute_from_command_line([arg0, "runserver", listen_on])
 
 
 if __name__ == "__main__":
