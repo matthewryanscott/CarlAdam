@@ -7,22 +7,19 @@ These will be cleaned up in a future effort that will remove the use of `attrs` 
 
 from __future__ import annotations
 
-# Python imports
+from collections import Counter
 from functools import lru_cache
-from typing import TYPE_CHECKING, Callable, Iterator, cast
+from typing import AbstractSet, Callable, Iterator, TYPE_CHECKING, cast
 
-# Pip imports
 from attr import Factory, define, field
 from attr.validators import instance_of, optional
 from pyrsistent import pmap
 
-# Internal imports
 from carladam.petrinet import defaults, errors
 from carladam.petrinet.color import Abstract, ColorSet, colorset_string
 from carladam.petrinet.place import Place
 from carladam.petrinet.token import Token, TokenSet
 from carladam.petrinet.transition import Transition
-
 
 if TYPE_CHECKING:  # pragma: nocover
     # Internal imports
@@ -52,6 +49,17 @@ def default_arc_weight() -> ColorSet:
     return pmap({Abstract: 1})
 
 
+def weights_are_satisfied(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bool:
+    colors: ColorSet = Counter(token.color for token in tokens)
+    if frozenset(arc.weight) - frozenset(colors):
+        # Arc weight specifies more colors than Place has.
+        return False
+    if any(color not in arc.weight or arc.weight[color] > count for color, count in colors.items()):
+        # Arc weight specifies more of some color token than place contains.
+        return False
+    return True
+
+
 @define
 class ArcPT:
     """An arc from `Place` → `Transition`."""
@@ -71,6 +79,9 @@ class ArcPT:
     # noinspection PyUnresolvedReferences
     transform: Callable | None = None
     """Function that will transform each token consumed."""
+
+    guard: Callable = weights_are_satisfied
+    """Function that returns True if the input tokens pass criteria."""
 
     completed: bool = False
     """Whether this arc has both a src and dest given."""
@@ -101,6 +112,11 @@ class ArcPT:
             transform=self.transform,
         )
 
+    def __call__(self, *args, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        return self
+
 
 @define
 class CompletedArcPT(ArcPT):
@@ -112,6 +128,7 @@ class CompletedArcPT(ArcPT):
     annotation: str | None = None
     # noinspection PyUnresolvedReferences
     transform: Callable | None = None
+    guard: Callable = weights_are_satisfied
     completed: bool = True
 
     __hash__ = __arc_hash__

@@ -194,7 +194,7 @@ class PetriNet(metaclass=PetriNetMeta):
             new_place_tokens = set(new_marking.get(place, pset()))
             colors_left = dict(arc.weight)
             inputs_to_add = set()
-            for token in marking[place]:
+            for token in marking.get(place, ()):
                 if colors_left.get(token.color, 0):
                     inputs_to_add.add(token)
                     new_place_tokens.remove(token)
@@ -237,20 +237,16 @@ class PetriNet(metaclass=PetriNetMeta):
         place: Place
         for arc in self.node_inputs.get(transition, ()):
             place = cast(CompletedArcPT, arc).src
-            colors: ColorSet = Counter(token.color for token in marking.get(place, set()))
-            if frozenset(arc.weight) - frozenset(colors):
-                # Arc weight specifies more colors than Place has.
-                return False
-            if any(color not in arc.weight or arc.weight[color] > count for color, count in colors.items()):
-                # Arc weight specifies more of some color token than place contains.
+            tokens = marking.get(place, set())
+            if not arc.guard(arc, tokens):
                 return False
         # Is the guard satisfied?
         inputs = set()
         for arc in self.node_inputs.get(transition, ()):
             place = cast(CompletedArcPT, arc).src
-            new_place_tokens = set(marking[place])
+            new_place_tokens = set(marking.get(place) or set())
             colors_left = dict(arc.weight)
-            for token in marking[place]:
+            for token in new_place_tokens.copy():
                 if colors_left.get(token.color, 0):
                     inputs.add(token)
                     new_place_tokens.remove(token)

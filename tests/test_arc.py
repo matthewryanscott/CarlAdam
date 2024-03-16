@@ -94,6 +94,32 @@ def test_weight():
     }
 
 
+def test_arc_pt_guard():
+    def inhibitor(arc, tokens):
+        return not tokens
+
+    net = PetriNet.new(
+        p_input := Place(),
+        p_yes := Place(),
+        p_no := Place(),
+        t_yes := Transition(),
+        t_no := Transition(),
+        p_input >> t_yes,  # default guard is to require an abstract token to be present
+        (p_input >> t_no)(guard=inhibitor),
+        t_yes >> p_yes,
+        t_no >> p_no,
+    )
+
+    yes_is_enabled = {p_input: {Token()}}
+    no_is_enabled = {}
+
+    assert net.transition_is_enabled(yes_is_enabled, t_yes)
+    assert not net.transition_is_enabled(yes_is_enabled, t_no)
+
+    assert not net.transition_is_enabled(no_is_enabled, t_yes)
+    assert net.transition_is_enabled(no_is_enabled, t_no)
+
+
 def test_weight_shorthand_using_color():
     p = Place()
     t = Transition()
