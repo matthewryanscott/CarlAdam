@@ -4,6 +4,7 @@ import pytest
 # Internal imports
 from carladam import Abstract, Color, Token
 from carladam.petrinet import errors
+from carladam.petrinet.occurrence import NotEnabled
 from carladam.petrinet.petrinet import PetriNet
 from carladam.petrinet.place import Place
 from carladam.petrinet.transition import Transition, always
@@ -93,7 +94,7 @@ def test_guard_can_prevent_transition():
 def test_transition_is_not_enabled_if_disconnected():
     net = PetriNet.new(t := Transition())
     assert not net.transition_is_enabled({}, t)
-    with pytest.raises(errors.PetriNetTransitionNotEnabled):
+    with pytest.raises(NotEnabled):
         net.marking_after_transition({}, t)
 
 
