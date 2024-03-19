@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 # Python imports
-from collections import Counter
 from collections.abc import Generator, Iterable
 from functools import lru_cache
 from itertools import chain
@@ -13,14 +12,13 @@ from pyrsistent import PList, PMap, PSet, pmap, pset
 
 # Internal imports
 from carladam.petrinet import errors
-from carladam.petrinet.arc import CompletedArcPT, CompletedArcTP
-from carladam.petrinet.color import Abstract, Color, ColorSet
+from carladam.petrinet.color import Abstract, Color
+from carladam.petrinet.effects import apply_effects_to_marking
 from carladam.petrinet.marking import Marking, PMarking, pmarking
+from carladam.petrinet.occurrence import Occurrence
 from carladam.petrinet.place import Place
-from carladam.petrinet.token import TokenSet
 from carladam.petrinet.transition import Transition
 from carladam.petrinet.types import (
-    Arc,
     ArcTypes,
     CompletedArc,
     CompletedArcTypes,
@@ -125,8 +123,7 @@ class PetriNet(metaclass=PetriNetMeta):
         for arc in self.node_inputs.get(node, ()):
             net = net.update(arc.src, arc)
         for arc in self.node_outputs.get(node, ()):
-            dest = cast(Arc, arc.dest)  # Arc | None -> Arc -- update() guards against None.
-            net = net.update(dest, arc)
+            net = net.update(arc.dest, arc)
         return net
 
     def update(self, *others: PetriNetMemberOrSet) -> PetriNet:
@@ -181,49 +178,8 @@ class PetriNet(metaclass=PetriNetMeta):
 
     @lru_cache
     def _marking_after_transition(self, marking: PMarking, transition: Transition) -> PMarking:
-        new_marking = marking
-        if not self.transition_is_enabled(marking, transition):
-            raise errors.PetriNetTransitionNotEnabled()
-        # Consume inputs.
-        inputs = set()
-        place: Place
-        for arc in self.node_inputs.get(transition, ()):
-            # [TODO] remove casts after typing cleanup
-            # We cast to Place here since it's always set in this case.
-            place = cast(CompletedArcPT, arc).src
-            new_place_tokens = set(new_marking.get(place, pset()))
-            colors_left = dict(arc.weight)
-            inputs_to_add = set()
-            for token in marking[place]:
-                if colors_left.get(token.color, 0):
-                    inputs_to_add.add(token)
-                    new_place_tokens.remove(token)
-                    colors_left[token.color] -= 1
-            if callable(arc.transform):
-                inputs_to_add = arc.transform(inputs_to_add)
-            inputs.update(inputs_to_add)
-            new_marking = new_marking.set(place, pset(new_place_tokens))
-        # Calculate outputs.
-        output_tokensets = pset(pset(tokenset) for tokenset in transition.fn(pset(inputs)))
-        # Ensure each output's colorset is unique amongst all outputs.
-        # This is to avoid ambiguity when placing tokens into destinations.
-        output_tokensets_by_colorset: Mapping[ColorSet, TokenSet] = {
-            pmap(Counter(token.color for token in tokenset)): tokenset for tokenset in output_tokensets
-        }
-        if len(output_tokensets_by_colorset) < len(output_tokensets):
-            raise errors.PetriNetTransitionFunctionOutputHasOverlappingColorsets()
-        # Produce outputs.
-        for arc in self.node_outputs.get(transition, ()):
-            arc = cast(CompletedArcTP, arc)  # Arc -> ArcTP -- We know the type of the arc.
-            place = cast(Place, arc.dest)  # Place | None -> Place -- update() guards against None.
-            outputs_for_place = output_tokensets_by_colorset[arc.weight]
-            if callable(arc.transform):
-                outputs_for_place = arc.transform(outputs_for_place)
-            new_marking = new_marking.set(place, new_marking.get(place, pset()).union(outputs_for_place))
-        for key, value in new_marking.items():
-            if not value:
-                new_marking = new_marking.discard(key)
-        return new_marking
+        effects = Occurrence(self, marking, transition).effects()
+        return apply_effects_to_marking(marking, effects)
 
     def transition_is_enabled(self, marking: Marking, transition: Transition) -> bool:
         """Returns True if the given `Transition` is enabled in this net given a `Marking`."""
@@ -231,31 +187,7 @@ class PetriNet(metaclass=PetriNetMeta):
 
     @lru_cache
     def _transition_is_enabled(self, marking: PMarking, transition: Transition) -> bool:
-        if not self.node_inputs.get(transition) and not self.node_outputs.get(transition):
-            return False
-        # Are there enough tokens?
-        place: Place
-        for arc in self.node_inputs.get(transition, ()):
-            place = cast(CompletedArcPT, arc).src
-            colors: ColorSet = Counter(token.color for token in marking.get(place, set()))
-            if frozenset(arc.weight) - frozenset(colors):
-                # Arc weight specifies more colors than Place has.
-                return False
-            if any(color not in arc.weight or arc.weight[color] > count for color, count in colors.items()):
-                # Arc weight specifies more of some color token than place contains.
-                return False
-        # Is the guard satisfied?
-        inputs = set()
-        for arc in self.node_inputs.get(transition, ()):
-            place = cast(CompletedArcPT, arc).src
-            new_place_tokens = set(marking[place])
-            colors_left = dict(arc.weight)
-            for token in marking[place]:
-                if colors_left.get(token.color, 0):
-                    inputs.add(token)
-                    new_place_tokens.remove(token)
-                    colors_left[token.color] -= 1
-        return transition.guard(pset(inputs))
+        return Occurrence(self, marking, transition).is_enabled()
 
     def transition_is_external(self, transition: Transition) -> bool:
         """Returns True if a given `Transition` is external in relation to this net."""

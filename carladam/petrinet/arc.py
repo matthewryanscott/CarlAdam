@@ -9,7 +9,7 @@ from __future__ import annotations
 
 # Python imports
 from functools import lru_cache
-from typing import TYPE_CHECKING, Callable, Iterator, cast
+from typing import Callable, Iterator, TYPE_CHECKING, overload
 
 # Pip imports
 from attr import Factory, define, field
@@ -22,7 +22,6 @@ from carladam.petrinet.color import Abstract, ColorSet, colorset_string
 from carladam.petrinet.place import Place
 from carladam.petrinet.token import Token, TokenSet
 from carladam.petrinet.transition import Transition
-
 
 if TYPE_CHECKING:  # pragma: nocover
     # Internal imports
@@ -77,7 +76,7 @@ class ArcPT:
 
     def __lshift__(self, other: Place | Annotate | TransformEach) -> ArcPT:
         if isinstance(other, (Annotate, TransformEach)):
-            return cast(ArcPT, other.apply_to_arc(self))
+            return other.apply_to_arc(self)
         if self.dest is None:
             raise errors.PetriNetArcIncomplete("Cannot << to an arc not having a dest")
         return CompletedArcPT(
@@ -90,7 +89,7 @@ class ArcPT:
 
     def __rshift__(self, other: Transition | Annotate | TransformEach) -> ArcPT:
         if isinstance(other, (Annotate, TransformEach)):
-            return cast(ArcPT, other.apply_to_arc(self))
+            return other.apply_to_arc(self)
         if self.src is None:
             raise errors.PetriNetArcIncomplete("Cannot >> from an arc not having a src")
         return CompletedArcPT(
@@ -144,7 +143,7 @@ class ArcTP:
 
     def __lshift__(self, other: Transition | Annotate | TransformEach) -> ArcTP:
         if isinstance(other, (Annotate, TransformEach)):
-            return cast(ArcTP, other.apply_to_arc(self))
+            return other.apply_to_arc(self)
         if self.dest is None:
             raise errors.PetriNetArcIncomplete("Cannot << to an arc not having a dest")
         return CompletedArcTP(
@@ -157,7 +156,7 @@ class ArcTP:
 
     def __rshift__(self, other: Place | Annotate | TransformEach) -> ArcTP:
         if isinstance(other, (Annotate, TransformEach)):
-            return cast(ArcTP, other.apply_to_arc(self))
+            return other.apply_to_arc(self)
         if self.src is None:
             raise errors.PetriNetArcIncomplete("Cannot >> from an arc not having a src")
         return CompletedArcTP(
@@ -193,6 +192,12 @@ class Annotate:
     text: str
     "Text used to describe an `Arc`."
 
+    @overload
+    def apply_to_arc(self, arc: ArcPT) -> ArcPT: ...
+
+    @overload
+    def apply_to_arc(self, arc: ArcTP) -> ArcTP: ...
+
     def apply_to_arc(self, arc: Arc) -> Arc:
         return type(arc)(
             src=arc.src,  # type: ignore
@@ -209,6 +214,12 @@ class TransformEach:
 
     fn: Callable
     "Function taking a `Token` and returning a `Token`."
+
+    @overload
+    def apply_to_arc(self, arc: ArcPT) -> ArcPT: ...
+
+    @overload
+    def apply_to_arc(self, arc: ArcTP) -> ArcTP: ...
 
     def apply_to_arc(self, arc: Arc) -> Arc:
         def transformed_tokens(tokens: TokenSet) -> Iterator[Token]:
