@@ -19,7 +19,6 @@ from carladam.petrinet.occurrence import Occurrence
 from carladam.petrinet.place import Place
 from carladam.petrinet.transition import Transition
 from carladam.petrinet.types import (
-    Arc,
     ArcTypes,
     CompletedArc,
     CompletedArcTypes,
@@ -124,8 +123,7 @@ class PetriNet(metaclass=PetriNetMeta):
         for arc in self.node_inputs.get(node, ()):
             net = net.update(arc.src, arc)
         for arc in self.node_outputs.get(node, ()):
-            dest = cast(Arc, arc.dest)  # Arc | None -> Arc -- update() guards against None.
-            net = net.update(dest, arc)
+            net = net.update(arc.dest, arc)
         return net
 
     def update(self, *others: PetriNetMemberOrSet) -> PetriNet:

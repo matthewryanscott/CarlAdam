@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import Mapping, Sequence, TYPE_CHECKING, cast
+from typing import Mapping, Sequence, TYPE_CHECKING
 
 import attrs
 from pyrsistent import plist, pmap, pset
@@ -64,7 +64,7 @@ class Occurrence:
     def transition_inputs(self):
         inputs = set()
         for arc in self.input_arcs():
-            place = cast(CompletedArcPT, arc).src
+            place = arc.src
             new_place_tokens = set(self.marking[place])
             colors_left = dict(arc.weight)
             for token in self.marking[place]:
@@ -80,7 +80,7 @@ class Occurrence:
         # Consume inputs.
         inputs = set()
         for arc in self.input_arcs():
-            place = cast(CompletedArcPT, arc).src
+            place = arc.src
             colors_left = dict(arc.weight)
             inputs_to_add = set()
             for token in self.marking[place]:
@@ -104,7 +104,6 @@ class Occurrence:
             raise PetriNetTransitionFunctionOutputHasOverlappingColorsets()
         # Produce outputs.
         for arc in self.output_arcs():
-            arc = cast(CompletedArcTP, arc)  # Arc -> ArcTP -- We know the type of the arc.
             outputs_for_place = output_tokensets_by_colorset[arc.weight]
             for token in outputs_for_place:
                 effects.append(Output(arc=arc, token=token))
