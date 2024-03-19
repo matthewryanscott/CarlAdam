@@ -90,8 +90,7 @@ class Occurrence:
                     colors_left[token.color] -= 1
             if callable(arc.transform):
                 inputs_to_add = arc.transform(inputs_to_add)
-            for token in inputs_to_add:
-                effects.append(Input(arc=arc, token=token))
+            effects.extend(Input(arc=arc, token=token) for token in inputs_to_add)
             inputs.update(inputs_to_add)
         # Calculate outputs.
         output_tokensets = pset(pset(tokenset) for tokenset in self.transition.fn(pset(inputs)))
@@ -105,12 +104,10 @@ class Occurrence:
         # Produce outputs.
         for arc in self.output_arcs():
             outputs_for_place = output_tokensets_by_colorset[arc.weight]
-            for token in outputs_for_place:
-                effects.append(Output(arc=arc, token=token))
+            effects.extend(Output(arc=arc, token=token) for token in outputs_for_place)
             if callable(arc.transform):
                 outputs_for_place = arc.transform(outputs_for_place)
-            for token in outputs_for_place:
-                effects.append(Produce(arc=arc, token=token))
+            effects.extend(Produce(arc=arc, token=token) for token in outputs_for_place)
         return plist(effects)
 
     def output_arcs(self) -> Sequence[CompletedArcTP]:
