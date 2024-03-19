@@ -30,7 +30,9 @@ class Consume:
 
     def apply_to_marking(self, marking: PMarking) -> PMarking:
         new_place_tokens = marking.get(self.arc.src, pset()).remove(self.token)
-        return marking.set(self.arc.src, pset(new_place_tokens))
+        if new_place_tokens:
+            return marking.set(self.arc.src, pset(new_place_tokens))
+        return marking.remove(self.arc.src)
 
 
 @attrs.define
