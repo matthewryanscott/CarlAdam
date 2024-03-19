@@ -3,7 +3,7 @@ from __future__ import annotations
 # Python imports
 from collections import Counter, defaultdict
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, AbstractSet, Callable, Iterator, cast
+from typing import AbstractSet, Callable, Iterator, TYPE_CHECKING, cast, overload
 
 # Pip imports
 from attr import define, field
@@ -15,12 +15,10 @@ from carladam.petrinet.color import Abstract, Color, ColorSet, MutableColorSet
 from carladam.petrinet.defaults import default_id
 from carladam.petrinet.token import TokenSet
 
-
 if TYPE_CHECKING:  # pragma: nocover
     # Internal imports
-    from carladam.petrinet.arc import ArcPT, ArcTP
+    from carladam.petrinet.arc import ArcPT, ArcTP, CompletedArcTP
     from carladam.petrinet.place import Place
-
 
 TransitionGuard = Callable[[TokenSet], bool]
 "Type of function receiving a set of `Token`s from input `Place`s and returning `True` if guard(s) are met."
@@ -163,7 +161,13 @@ class Transition:
             return CompletedArcPT(src=other, dest=self)
         raise TypeError("Transition cannot be connected to object.", other)
 
-    def __rshift__(self, other: Place | Color | ColorSet | AbstractSet[Color]) -> ArcTP:
+    @overload
+    def __rshift__(self, other: Place) -> CompletedArcTP: ...
+
+    @overload
+    def __rshift__(self, other: Color | ColorSet | AbstractSet[Color]) -> ArcTP: ...
+
+    def __rshift__(self, other: Place | Color | ColorSet | AbstractSet[Color]) -> ArcTP | CompletedArcTP:
         """Returns an arc from this `Transition` to the given `Place`."""
         # Internal imports
         from carladam.petrinet.arc import ArcTP, CompletedArcTP

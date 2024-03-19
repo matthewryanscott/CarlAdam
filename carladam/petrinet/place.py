@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # Python imports
-from typing import TYPE_CHECKING, AbstractSet
+from typing import AbstractSet, TYPE_CHECKING, overload
 
 # Pip imports
 from attr import define, field
@@ -12,10 +12,9 @@ from carladam.petrinet import defaults
 from carladam.petrinet.color import Color, ColorSet
 from carladam.petrinet.defaults import default_id
 
-
 if TYPE_CHECKING:  # pragma: nocover
     # Internal imports
-    from carladam.petrinet.arc import ArcPT, ArcTP
+    from carladam.petrinet.arc import ArcPT, ArcTP, CompletedArcPT
     from carladam.petrinet.transition import Transition
 
 
@@ -70,7 +69,13 @@ class Place:
 
         raise TypeError("Place cannot be connected to object.", other)
 
-    def __rshift__(self, other: Transition | Color | ColorSet | AbstractSet[Color]) -> ArcPT:
+    @overload
+    def __rshift__(self, other: Transition) -> CompletedArcPT: ...
+
+    @overload
+    def __rshift__(self, other: Color | ColorSet | AbstractSet[Color]) -> ArcPT: ...
+
+    def __rshift__(self, other: Transition | Color | ColorSet | AbstractSet[Color]) -> ArcPT | CompletedArcPT:
         """Returns an arc from this `Place` to the given `Transition`."""
         # Internal imports
         from carladam.petrinet.arc import ArcPT, CompletedArcPT
