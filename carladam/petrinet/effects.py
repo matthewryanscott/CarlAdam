@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import typing
 from typing import Sequence
 
 import attrs
@@ -9,9 +8,6 @@ from pyrsistent import pset
 from carladam.petrinet.arc import CompletedArcPT, CompletedArcTP
 from carladam.petrinet.marking import PMarking
 from carladam.petrinet.token import Token
-
-if typing.TYPE_CHECKING:
-    pass
 
 
 @attrs.define
@@ -24,9 +20,6 @@ class Consume:
 
     arc: CompletedArcPT
     token: Token
-
-    def __hash__(self):
-        return hash((Consume, self.arc, self.token))
 
     def apply_to_marking(self, marking: PMarking) -> PMarking:
         new_place_tokens = marking.get(self.arc.src, pset()).remove(self.token)
@@ -46,9 +39,6 @@ class Input:
     arc: CompletedArcPT
     token: Token
 
-    def __hash__(self):
-        return hash((Input, self.arc, self.token))
-
     def apply_to_marking(self, marking: PMarking) -> PMarking:
         return marking
 
@@ -63,9 +53,6 @@ class Output:
 
     arc: CompletedArcTP
     token: Token
-
-    def __hash__(self):
-        return hash((Output, self.arc, self.token))
 
     def apply_to_marking(self, marking: PMarking) -> PMarking:
         return marking
@@ -82,9 +69,6 @@ class Produce:
 
     arc: CompletedArcTP
     token: Token
-
-    def __hash__(self):
-        return hash((Produce, self.arc, self.token))
 
     def apply_to_marking(self, marking: PMarking) -> PMarking:
         new_place_tokens = marking.get(self.arc.dest, pset()).add(self.token)

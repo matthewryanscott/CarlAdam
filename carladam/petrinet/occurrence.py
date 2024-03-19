@@ -16,7 +16,7 @@ from carladam.petrinet.token import TokenSet
 from carladam.petrinet.transition import Transition
 
 if TYPE_CHECKING:
-    from carladam.petrinet.petrinet import PetriNet
+    from carladam.petrinet.petrinet import PetriNet  # pragma: nocover
 
 
 @attrs.define
@@ -134,5 +134,5 @@ class TransitionGuardReturnsFalse(NotEnabled):
     pass
 
 
-class TransitionGuardRaisesException(NotEnabled):
+class TransitionGuardRaisesException(Exception):
     pass
