@@ -7,11 +7,23 @@
 
     <p><a href="{% url "index" %}">← Index of Petri nets</a></p>
 
+    <p>
+        {% if rotate %}
+            <a href="?initial_marking={{ initial_marking|marking_encoded }}&transitions={{ transition_ids }}&rotate=0">
+                <button>🔃 Rotate to vertical</button>
+            </a>
+        {% else %}
+            <a href="?initial_marking={{ initial_marking|marking_encoded }}&transitions={{ transition_ids }}&rotate=1">
+                <button>🔁 Rotate to horizontal</button>
+            </a>
+        {% endif %}
+    </p>
+
     <p>Example markings:</p>
 
     <ul>
         {% for name, marking in example_markings.items %}
-            <li><a href="?initial_marking={{ marking|marking_encoded }}">{{ name }}</a></li>
+            <li><a href="?initial_marking={{ marking|marking_encoded }}&rotate={% if rotate %}1{% endif %}">{{ name }}</a></li>
         {% endfor %}
     </ul>
 </div>
@@ -37,7 +49,7 @@
                 <li>
                     {% for transition in enabled_transitions %}
                         <div>
-                            <a href="?initial_marking={{ initial_marking|marking_encoded }}&transitions={{ transition_ids }},{{ transition.id }}">
+                            <a href="?initial_marking={{ initial_marking|marking_encoded }}&transitions={{ transition_ids }},{{ transition.id }}&rotate={% if rotate %}1{% endif %}">
                                 <button>{{ transition.name }}</button>
                             </a>
                         </div>
@@ -64,9 +76,9 @@
     <div style="display: inline-block; vertical-align: top">
         <p>Net with current marking:</p>
         <div>
-            {% net_graph_image_data net=net initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}
+            {% net_graph_image_data net=net initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking rotate=rotate legend=False %}
         </div>
-        <a target="_blank" href="{% net_graph_niolesk_url net=net initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}">
+        <a target="_blank" href="{% net_graph_niolesk_url net=net initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking rotate=rotate legend=False %}">
             Edit GraphViz ↗
         </a>
     </div>
@@ -76,9 +88,9 @@
             <p>Enabled transitions:</p>
 
             <div>
-                {% net_graph_image_data net=enabled_subnet initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}
+                {% net_graph_image_data net=enabled_subnet initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking rotate=rotate legend=False %}
             </div>
-            <a target="_blank" href="{% net_graph_niolesk_url net=enabled_subnet initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking legend=False %}">
+            <a target="_blank" href="{% net_graph_niolesk_url net=enabled_subnet initial_marking=initial_marking transition_ids_str=transition_ids current_marking=current_marking rotate=rotate legend=False %}">
                 Edit GraphViz ↗
             </a>
         </div>

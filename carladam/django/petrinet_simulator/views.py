@@ -32,6 +32,9 @@ def simulator(request, net_name: str, petrinets: Mapping[str, PetriNet] | None =
 
     colors = pmap((color.label, color) for color in net.colors)
 
+    # Get options
+    rotate = request.GET.get("rotate") == "1"
+
     # Decode initial marking from JSON.
     initial_marking_str = request.GET.get("initial_marking", "{}")
     initial_marking_json = json.loads(initial_marking_str)
@@ -68,5 +71,6 @@ def simulator(request, net_name: str, petrinets: Mapping[str, PetriNet] | None =
         net_name=net_name,
         transition_ids=",".join(transition.id for transition in transitions),
         transitions=transitions,
+        rotate=rotate,
     )
     return render(request, "petrinet_simulator/simulator.html", context)

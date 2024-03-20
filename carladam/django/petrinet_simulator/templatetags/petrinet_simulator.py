@@ -22,7 +22,6 @@ from carladam.diagram.sequence import plantuml_sequence_diagram
 from carladam.petrinet.marking import PMarking, pmarking
 from carladam.petrinet.types import PetriNetNode
 
-
 register = template.Library()
 
 
@@ -49,11 +48,22 @@ def net_graph_image_data(
     transition_ids_str: str,
     current_marking: PMarking,
     legend: bool = True,
+    rotate: bool = False,
 ) -> str:
     def transition_url_fn(t: Transition) -> str:
-        return f"?initial_marking={marking_encoded(initial_marking)}&transitions={transition_ids_str},{t.id}"
+        return (
+            f"?initial_marking={marking_encoded(initial_marking)}"
+            f"&transitions={transition_ids_str},{t.id}"
+            f"&rotate={int(rotate or 0)}"
+        )
 
-    diagram_source = graphviz_digraph(net, current_marking, legend=legend, transition_url_fn=transition_url_fn)
+    diagram_source = graphviz_digraph(
+        net,
+        current_marking,
+        legend=legend,
+        transition_url_fn=transition_url_fn,
+        rotate=rotate,
+    )
     image_url = kroki_image_url(diagram_source=diagram_source, diagram_type="graphviz", image_format="svg")
     image_source = _image_source(image_url)
     return SafeString(image_source)
@@ -66,11 +76,22 @@ def net_graph_niolesk_url(
     transition_ids_str: str,
     current_marking: PMarking,
     legend: bool = True,
+    rotate: bool = False,
 ) -> str:
     def transition_url_fn(t: Transition) -> str:
-        return f"?initial_marking={marking_encoded(initial_marking)}&transitions={transition_ids_str},{t.id}"
+        return (
+            f"?initial_marking={marking_encoded(initial_marking)}"
+            f"&transitions={transition_ids_str},{t.id}"
+            f"&rotate={int(rotate or 0)}"
+        )
 
-    diagram_source = graphviz_digraph(net, current_marking, legend=legend, transition_url_fn=transition_url_fn)
+    diagram_source = graphviz_digraph(
+        net,
+        current_marking,
+        legend=legend,
+        transition_url_fn=transition_url_fn,
+        rotate=rotate,
+    )
     image_url = kroki_image_url(
         diagram_source=diagram_source,
         diagram_type="graphviz",
