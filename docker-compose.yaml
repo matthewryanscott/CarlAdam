@@ -25,3 +25,4 @@ services:
       - "CARLADAM_NIOLESK_KROKI_URL=http://localhost:8001/"
     volumes:
       - .:/app
+    restart: unless-stopped

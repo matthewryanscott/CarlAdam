@@ -7,16 +7,14 @@ These will be cleaned up in a future effort that will remove the use of `attrs` 
 
 from __future__ import annotations
 
-# Python imports
+from collections import Counter
 from functools import lru_cache
-from typing import Callable, Iterator, TYPE_CHECKING, overload
+from typing import AbstractSet, Callable, Iterator, TYPE_CHECKING, overload
 
-# Pip imports
 from attr import Factory, define, field
 from attr.validators import instance_of, optional
 from pyrsistent import pmap
 
-# Internal imports
 from carladam.petrinet import defaults, errors
 from carladam.petrinet.color import Abstract, ColorSet, colorset_string
 from carladam.petrinet.place import Place
@@ -51,6 +49,15 @@ def default_arc_weight() -> ColorSet:
     return pmap({Abstract: 1})
 
 
+def weights_are_satisfied(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bool:
+    colors: ColorSet = Counter(token.color for token in tokens)
+    # Do the tokens have all the colors specified by the arc weight?
+    if frozenset(arc.weight) - frozenset(colors):
+        return False
+    # Do the tokens satisfy all of the quantities specified by the arc weight?
+    return all(arc.weight[color] <= count for color, count in colors.items())
+
+
 @define
 class ArcPT:
     """An arc from `Place` → `Transition`."""
@@ -70,6 +77,9 @@ class ArcPT:
     # noinspection PyUnresolvedReferences
     transform: Callable | None = None
     """Function that will transform each token consumed."""
+
+    guard: Callable = weights_are_satisfied
+    """Function that returns True if the input tokens pass criteria."""
 
     completed: bool = False
     """Whether this arc has both a src and dest given."""
@@ -100,6 +110,11 @@ class ArcPT:
             transform=self.transform,
         )
 
+    def __call__(self, *args, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        return self
+
 
 @define
 class CompletedArcPT(ArcPT):
@@ -111,6 +126,7 @@ class CompletedArcPT(ArcPT):
     annotation: str | None = None
     # noinspection PyUnresolvedReferences
     transform: Callable | None = None
+    guard: Callable = weights_are_satisfied
     completed: bool = True
 
     __hash__ = __arc_hash__
