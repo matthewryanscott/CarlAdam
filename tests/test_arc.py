@@ -207,3 +207,44 @@ def test_cannot_overwrite_already_set_endpoints():
     arc = t >> {Abstract: 1}
     with pytest.raises(errors.PetriNetArcIncomplete):
         arc << t
+
+
+def test_arc_pt_guard():
+    def inhibitor(arc, tokens):
+        return not tokens
+
+    net = PetriNet.new(
+        p_input := Place(),
+        p_yes := Place(),
+        p_no := Place(),
+        t_yes := Transition(),
+        t_no := Transition(),
+        p_input >> t_yes,  # default guard is to require an abstract token to be present
+        (p_input >> t_no)(guard=inhibitor),
+        t_yes >> p_yes,
+        t_no >> p_no,
+    )
+
+    yes_is_enabled = {p_input: {Token()}}
+    no_is_enabled = {}
+
+    assert net.transition_is_enabled(yes_is_enabled, t_yes)
+    assert not net.transition_is_enabled(yes_is_enabled, t_no)
+
+    assert not net.transition_is_enabled(no_is_enabled, t_yes)
+    assert net.transition_is_enabled(no_is_enabled, t_no)
+
+
+def test_arc_pt_guard_raises_exception():
+    def guard_raises_exception(arc, tokens):
+        raise ValueError("This guard always raises an exception")
+
+    net = PetriNet.new(
+        p := Place(),
+        t := Transition(),
+        (p >> t)(guard=guard_raises_exception),
+    )
+
+    with pytest.raises(errors.ArcGuardRaisesException) as e:
+        net.transition_is_enabled({p: {Token()}}, t)
+    assert isinstance(e.value.__cause__, ValueError)

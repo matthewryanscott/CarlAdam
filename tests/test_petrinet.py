@@ -4,7 +4,7 @@ import pytest
 # Internal imports
 from carladam import Abstract, Color, Token
 from carladam.petrinet import errors
-from carladam.petrinet.occurrence import NotEnabled, TransitionGuardRaisesException
+from carladam.petrinet.errors import TransitionGuardRaisesException, TransitionNotEnabled
 from carladam.petrinet.petrinet import PetriNet
 from carladam.petrinet.place import Place
 from carladam.petrinet.transition import Transition, always
@@ -92,15 +92,12 @@ def test_guard_can_prevent_transition():
 
 
 def test_guard_exceptions_are_raised():
-    class SomeError(Exception):
-        pass
-
-    def guard_that_raises_error(*_):
-        raise SomeError()
+    def guard_raises_exception(*_):
+        raise ValueError("This guard always raises an exception")
 
     net = PetriNet.new(
         p0 := Place(),
-        t0 := Transition(guard=guard_that_raises_error),
+        t0 := Transition(guard=guard_raises_exception),
         p1 := Place(),
         p0 >> t0,
         t0 >> p1,
@@ -108,13 +105,13 @@ def test_guard_exceptions_are_raised():
     marking = {p0: {Token()}}
     with pytest.raises(TransitionGuardRaisesException) as e:
         assert not net.transition_is_enabled(marking, t0)
-    assert isinstance(e.value.__cause__, SomeError)
+    assert isinstance(e.value.__cause__, ValueError)
 
 
 def test_transition_is_not_enabled_if_disconnected():
     net = PetriNet.new(t := Transition())
     assert not net.transition_is_enabled({}, t)
-    with pytest.raises(NotEnabled):
+    with pytest.raises(TransitionNotEnabled):
         net.marking_after_transition({}, t)
 
 

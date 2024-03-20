@@ -10,7 +10,15 @@ from pyrsistent.typing import PList
 from carladam.petrinet.arc import CompletedArcPT, CompletedArcTP
 from carladam.petrinet.color import ColorSet
 from carladam.petrinet.effects import Consume, Effect, Input, Output, Produce
-from carladam.petrinet.errors import PetriNetTransitionFunctionOutputHasOverlappingColorsets
+from carladam.petrinet.errors import (
+    ArcGuardRaisesException,
+    ArcGuardReturnsFalse,
+    PetriNetTransitionFunctionOutputHasOverlappingColorsets,
+    TransitionGuardRaisesException,
+    TransitionGuardReturnsFalse,
+    TransitionHasNoArcs,
+    TransitionNotEnabled,
+)
 from carladam.petrinet.marking import PMarking
 from carladam.petrinet.token import TokenSet
 from carladam.petrinet.transition import Transition
@@ -28,35 +36,47 @@ class Occurrence:
     def is_enabled(self) -> bool:
         try:
             self.check_enabled()
-        except NotEnabled:
+        except TransitionNotEnabled:
             return False
         return True
 
     def check_enabled(self):
-        if not self.net.node_inputs.get(self.transition) and not self.net.node_outputs.get(self.transition):
-            raise NoArcs()
-        # Are there enough tokens?
+        self._check_transition_connectivity()
         for arc in self.input_arcs():
-            input_colorset = self.input_colorset_for_arc(arc)
-            if frozenset(arc.weight.keys()) - frozenset(input_colorset.keys()):
-                # Arc weight specifies more colors than Place has.
-                raise ArcWeightColorsNotSatisfied()
-            if not self.input_colorset_satisfies_weight(arc.weight, input_colorset):
-                # Arc weight specifies more of some color token than place contains.
-                raise ArcWeightQuantityNotSatisfied()
-        # Is the guard satisfied?
+            tokens = self.marking.get(arc.src, set())
+            self._check_arc_guard(arc, tokens)
+        self._check_transition_guard()
+
+    def _check_transition_connectivity(self):
+        """Checks that the transition is connected to at least one arc."""
+        input_arcs = self.net.node_inputs.get(self.transition)
+        output_arcs = self.net.node_outputs.get(self.transition)
+        if not input_arcs and not output_arcs:
+            raise TransitionHasNoArcs()
+
+    def _check_arc_guard(self, arc, tokens):
+        """
+        Checks that the arc guard passes.
+
+        [NOTE]: This checks tokens that will be consumed from a place,
+         *before* an arc's `transform` method is called.
+         See also https://github.com/matthewryanscott/CarlAdam/issues/14
+        """
+        try:
+            arc_guard_result = arc.guard(arc, tokens)
+        except Exception as e:
+            raise ArcGuardRaisesException(arc, tokens) from e
+        if not arc_guard_result:
+            raise ArcGuardReturnsFalse()
+
+    def _check_transition_guard(self):
+        """Checks that the transition guard passes."""
         try:
             guard_result = self.transition.guard(self.transition_inputs())
         except Exception as e:
             raise TransitionGuardRaisesException() from e
         if not guard_result:
             raise TransitionGuardReturnsFalse()
-
-    def input_colorset_satisfies_weight(self, weight, colors):
-        return all(color in weight and weight[color] <= count for color, count in colors.items())
-
-    def input_colorset_for_arc(self, arc) -> ColorSet:
-        return Counter(token.color for token in self.marking.get(arc.src, set()))
 
     def input_arcs(self) -> Sequence[CompletedArcPT]:
         return self.net.node_inputs.get(self.transition, ())
@@ -65,9 +85,9 @@ class Occurrence:
         inputs = set()
         for arc in self.input_arcs():
             place = arc.src
-            new_place_tokens = set(self.marking[place])
+            new_place_tokens = set(self.marking.get(place) or set())
             colors_left = dict(arc.weight)
-            for token in self.marking[place]:
+            for token in new_place_tokens.copy():
                 if colors_left.get(token.color, 0):
                     inputs.add(token)
                     new_place_tokens.remove(token)
@@ -112,27 +132,3 @@ class Occurrence:
 
     def output_arcs(self) -> Sequence[CompletedArcTP]:
         return self.net.node_outputs.get(self.transition, ())
-
-
-class NotEnabled(Exception):
-    pass
-
-
-class NoArcs(NotEnabled):
-    pass
-
-
-class ArcWeightColorsNotSatisfied(NotEnabled):
-    pass
-
-
-class ArcWeightQuantityNotSatisfied(NotEnabled):
-    pass
-
-
-class TransitionGuardReturnsFalse(NotEnabled):
-    pass
-
-
-class TransitionGuardRaisesException(Exception):
-    pass
