@@ -15,7 +15,7 @@ from pyrsistent import pmap
 # Internal imports
 from carladam import Place, Transition
 from carladam.petrinet import defaults
-from carladam.petrinet.arc import ArcPT
+from carladam.petrinet.arc import ArcPT, CompletedArcPT
 from carladam.petrinet.color import colorset_string
 from carladam.petrinet.marking import PMarking
 from carladam.petrinet.petrinet import PetriNet
@@ -92,7 +92,7 @@ def graphviz_digraph(
             continue
         for arc in pair:
             arcs.remove(arc)
-            if isinstance(arc, ArcPT):
+            if isinstance(arc, CompletedArcPT):
                 double_arcs.add(arc)
 
     sorted_places = list(sorted(net.places))
@@ -115,7 +115,7 @@ def graphviz_digraph(
         clusters=getattr(net.structure, "clusters", {}),
         colorset_string=colorset_string,
         disabled_transitions=sorted_disabled_transitions,
-        double_arcs=sorted(double_arcs, key=hash),
+        double_arcs=sorted(double_arcs),
         enabled_transitions=sorted_enabled_transitions,
         enumerate=enumerate,
         legend=legend,
