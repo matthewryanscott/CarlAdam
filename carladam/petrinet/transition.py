@@ -3,7 +3,7 @@ from __future__ import annotations
 # Python imports
 from collections import Counter, defaultdict
 from collections.abc import Iterable
-from typing import AbstractSet, Callable, Iterator, TYPE_CHECKING, cast, overload
+from typing import AbstractSet, Callable, Iterator, Sequence, TYPE_CHECKING, cast, overload
 
 # Pip imports
 from attr import define, field
@@ -115,7 +115,7 @@ class Transition:
     annotation: str | None = None
     "Text annotation to show on a diagram."
 
-    fn: TransitionFunction = field(
+    fn: TransitionFunction | Sequence[TransitionFunction] = field(
         default=Abstract.produce(),
         repr=False,
         converter=convert_fn_list_to_generator,

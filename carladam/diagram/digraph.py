@@ -22,7 +22,6 @@ from carladam.petrinet.petrinet import PetriNet
 from carladam.petrinet.token import Token
 from carladam.petrinet.types import CompletedArc
 
-
 PLACE_ATTRIBUTES = "[shape=oval]"
 TRANSITION_ATTRIBUTES = "[shape=box]"
 
@@ -116,7 +115,7 @@ def graphviz_digraph(
         clusters=getattr(net.structure, "clusters", {}),
         colorset_string=colorset_string,
         disabled_transitions=sorted_disabled_transitions,
-        double_arcs=sorted(double_arcs),
+        double_arcs=sorted(double_arcs, key=hash),
         enabled_transitions=sorted_enabled_transitions,
         enumerate=enumerate,
         legend=legend,
