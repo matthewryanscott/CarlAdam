@@ -10,11 +10,11 @@
     <p>
         {% if rotate %}
             <a href="?initial_marking={{ initial_marking|marking_encoded }}&transitions={{ transition_ids }}&rotate=0">
-                <button>🔃 Rotate</button>
+                <button>🔃 Rotate to vertical</button>
             </a>
         {% else %}
             <a href="?initial_marking={{ initial_marking|marking_encoded }}&transitions={{ transition_ids }}&rotate=1">
-                <button>🔁 Rotate</button>
+                <button>🔁 Rotate to horizontal</button>
             </a>
         {% endif %}
     </p>
