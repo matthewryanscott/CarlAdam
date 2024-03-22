@@ -1,9 +1,6 @@
-# Internal imports
 import carladam as ca
 
-
 CheeseBlock = ca.Color("🧀")
-
 
 BREAD_SLICES = 2
 CHEESE_SLICES = 3

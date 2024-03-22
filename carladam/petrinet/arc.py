@@ -22,7 +22,6 @@ from carladam.petrinet.token import Token, TokenSet
 from carladam.petrinet.transition import Transition
 
 if TYPE_CHECKING:  # pragma: nocover
-    # Internal imports
     from carladam.petrinet.types import Arc
 
 

@@ -1,8 +1,6 @@
-# Pip imports
 import pytest
 from pyrsistent import s
 
-# Internal imports
 from carladam.petrinet.color import Abstract
 from carladam.petrinet.marking import marking_colorset
 from carladam.petrinet.petrinet import PetriNet

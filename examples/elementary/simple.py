@@ -1,4 +1,3 @@
-# Internal imports
 from carladam import PetriNet, Place, Token, Transition
 
 

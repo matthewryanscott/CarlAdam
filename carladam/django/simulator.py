@@ -1,4 +1,3 @@
-# Python imports
 import contextlib
 import importlib.util
 import os
@@ -7,7 +6,6 @@ from pathlib import Path
 from typing import Any, Dict, Type
 from uuid import uuid4
 
-# Pip imports
 from decouple import Csv, config
 from django.conf import settings
 from django.core import management
@@ -15,7 +13,6 @@ from django.http import HttpResponse
 from django.urls import include, path
 from django.utils import module_loading
 
-# Internal imports
 from carladam import PetriNet
 
 

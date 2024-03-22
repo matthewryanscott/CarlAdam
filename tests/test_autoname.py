@@ -1,4 +1,3 @@
-# Internal imports
 from carladam import PetriNet
 from carladam.petrinet.place import Place
 from carladam.petrinet.transition import Transition

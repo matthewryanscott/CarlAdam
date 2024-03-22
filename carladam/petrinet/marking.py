@@ -1,19 +1,14 @@
 from __future__ import annotations
 
-# Python imports
 from collections import Counter
 from typing import AbstractSet, Mapping, MutableMapping
 
-# Pip imports
 from pyrsistent import pmap, pset
-from pyrsistent.typing import PMap as PMapType
-from pyrsistent.typing import PSet as PSetType
+from pyrsistent.typing import PMap as PMapType, PSet as PSetType
 
-# Internal imports
 from carladam.petrinet.color import ColorSet
 from carladam.petrinet.place import Place
 from carladam.petrinet.token import Token
-
 
 Marking = Mapping[Place, AbstractSet[Token]]
 "A mapping between `Place`s and their respective `Token`s."

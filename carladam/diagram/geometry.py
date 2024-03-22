@@ -1,14 +1,10 @@
-# Python imports
 from typing import Callable, Dict
 
-# Pip imports
 import networkx as nx
 from numpy.typing import ArrayLike
 
-# Internal imports
 from carladam.petrinet.petrinet import PetriNet
 from carladam.petrinet.types import PetriNetNode
-
 
 NodeCoordinates = Dict[PetriNetNode, ArrayLike]
 LayoutFunction = Callable[..., NodeCoordinates]

@@ -1,7 +1,5 @@
-# Pip imports
 from pyrsistent import s
 
-# Internal imports
 from carladam import Color
 from carladam.petrinet.transition import Transition, passthrough
 

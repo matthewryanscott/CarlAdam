@@ -1,4 +1,3 @@
-# Pip imports
 # from django.contrib import admin
 
 

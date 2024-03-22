@@ -2,17 +2,14 @@
 
 from __future__ import annotations
 
-# Python imports
 from collections import defaultdict
 from functools import lru_cache
 from textwrap import dedent, wrap
 from typing import Callable, DefaultDict, FrozenSet, Optional, Set, Tuple
 
-# Pip imports
 from jinja2 import Template
 from pyrsistent import pmap
 
-# Internal imports
 from carladam import Place, Transition
 from carladam.petrinet import defaults
 from carladam.petrinet.arc import ArcPT, CompletedArcPT

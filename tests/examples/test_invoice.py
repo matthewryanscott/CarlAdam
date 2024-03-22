@@ -1,14 +1,11 @@
-# Pip imports
 import pytest
 
-# Internal imports
 from carladam.petrinet.color import Color
 from carladam.petrinet.marking import Marking, marking_colorset
 from carladam.petrinet.petrinet import PetriNet
 from carladam.petrinet.place import Place
 from carladam.petrinet.token import Token
 from carladam.petrinet.transition import Transition
-
 
 Invoice = Color("🧾")
 

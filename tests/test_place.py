@@ -1,4 +1,3 @@
-# Internal imports
 from carladam.petrinet.place import Place
 
 

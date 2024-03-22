@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-# Python imports
 from typing import AbstractSet, Any, Callable, Mapping
 
-# Pip imports
 from attr import Factory, define, field
 from pyrsistent import pmap, pset
 
-# Internal imports
 from carladam.petrinet.color import Abstract, Color
 from carladam.petrinet.defaults import default_id
 
@@ -57,7 +54,6 @@ class Token:
 
 TokenSet = AbstractSet[Token]
 "A set of `Token`."
-
 
 TokenFilter = Callable[[TokenSet], TokenSet]
 TokenReducer = Callable[[TokenSet], Token]

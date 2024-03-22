@@ -1,18 +1,14 @@
-# Python imports
 import inspect
 import typing
 from collections import Counter
 from typing import Type
 
-# Internal imports
 from carladam.petrinet.place import Place
 from carladam.petrinet.token import Token
 from carladam.petrinet.transition import Transition
 
-
 AutoNameableTypes = (Place, Token, Transition)
 "Types that can be automatically given a name."
-
 
 AUTONAME_TYPE_COUNTER: typing.Counter[Type] = Counter()
 
