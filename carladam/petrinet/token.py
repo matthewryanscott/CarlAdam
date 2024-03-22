@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from itertools import repeat
 from typing import AbstractSet, Any, Callable, Mapping
 
 from attr import Factory, define, field
@@ -35,11 +36,20 @@ class Token:
         """Return a copy of this `Token` but with `data` replaced with `kwargs`."""
         return Token(id=self.id, name=self.name, color=self.color, data=kwargs)
 
+    def clone(self) -> Token:
+        """Return a clone of this `Token` but having a new `id` and `name`."""
+        return Token(id=default_id(), color=self.color, data=self.data)
+
     def __hash__(self):
         return hash(self.id)
 
     def __lt__(self, other):
         return (self.color.label, self.name) < (other.color.label, other.name)
+
+    def __mul__(self, quantity: int) -> TokenSet:
+        if not isinstance(quantity, int):
+            raise TypeError("Can only multiply tokens by integers")
+        return frozenset(clone() for clone in repeat(self.clone, quantity))
 
     def __repr__(self):
         if self.name == self.id:
