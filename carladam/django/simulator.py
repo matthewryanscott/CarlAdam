@@ -84,7 +84,7 @@ def main():
             continue
         else:
             paths = [arg_path]
-        for module_path in paths:
+        for module_path in sorted(paths):
             with contextlib.suppress(ImportError):
                 # cf. https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
                 module_name = f"__{uuid4().hex}__"
@@ -92,7 +92,7 @@ def main():
                 module = importlib.util.module_from_spec(spec)
                 sys.modules[module_name] = module
                 spec.loader.exec_module(module)
-                for key in dir(module):
+                for key in sorted(dir(module)):
                     petrinet_cls: Type[PetriNet] = getattr(module, key)
                     if petrinet_cls is PetriNet:
                         continue
