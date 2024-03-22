@@ -1,7 +1,5 @@
-# Internal imports
 from carladam import Abstract, Color, PetriNet, Place, Transition
 from carladam.petrinet.marking import marking_colorset
-
 
 Coin = Color("🪙")
 Packet = Color("📦")

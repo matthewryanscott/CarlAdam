@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-# Python imports
 from collections.abc import Generator, Iterable
 from functools import lru_cache
 from itertools import chain
 from typing import AbstractSet, Iterator, Mapping, Type, cast
 
-# Pip imports
 from attr import Factory, define, field
 from pyrsistent import PList, PMap, PSet, pmap, pset
 
-# Internal imports
 from carladam.petrinet import errors
 from carladam.petrinet.color import Abstract, Color
 from carladam.petrinet.effects import apply_effects_to_marking

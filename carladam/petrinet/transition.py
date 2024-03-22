@@ -1,22 +1,18 @@
 from __future__ import annotations
 
-# Python imports
 from collections import Counter, defaultdict
 from collections.abc import Iterable
 from typing import AbstractSet, Callable, Iterator, Sequence, TYPE_CHECKING, cast, overload
 
-# Pip imports
 from attr import define, field
 from pyrsistent import PMap, PSet, pmap, pset
 
-# Internal imports
 from carladam.petrinet import defaults
 from carladam.petrinet.color import Abstract, Color, ColorSet, MutableColorSet
 from carladam.petrinet.defaults import default_id
 from carladam.petrinet.token import TokenSet
 
 if TYPE_CHECKING:  # pragma: nocover
-    # Internal imports
     from carladam.petrinet.arc import ArcPT, ArcTP, CompletedArcTP
     from carladam.petrinet.place import Place
 
@@ -147,7 +143,7 @@ class Transition:
 
     def __lshift__(self, other: Place | Color | ColorSet | AbstractSet[Color]) -> ArcPT:
         """Returns an arc from this `Transition` from the given `Place`."""
-        # Internal imports
+
         from carladam.petrinet.arc import ArcPT, CompletedArcPT
         from carladam.petrinet.place import Place
 
@@ -169,7 +165,7 @@ class Transition:
 
     def __rshift__(self, other: Place | Color | ColorSet | AbstractSet[Color]) -> ArcTP | CompletedArcTP:
         """Returns an arc from this `Transition` to the given `Place`."""
-        # Internal imports
+
         from carladam.petrinet.arc import ArcTP, CompletedArcTP
         from carladam.petrinet.place import Place
 

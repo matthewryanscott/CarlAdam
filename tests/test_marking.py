@@ -1,7 +1,5 @@
-# Pip imports
 from pyrsistent import pmap, s
 
-# Internal imports
 from carladam import Place, Token
 from carladam.petrinet.marking import pmarking
 

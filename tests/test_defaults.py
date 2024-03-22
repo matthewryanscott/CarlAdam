@@ -1,4 +1,3 @@
-# Internal imports
 from carladam.petrinet.defaults import default_id
 
 

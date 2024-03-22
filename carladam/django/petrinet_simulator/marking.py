@@ -1,12 +1,9 @@
-# Python imports
 from functools import lru_cache
 from typing import Mapping
 
-# Pip imports
 from pyrsistent import freeze
 from pyrsistent.typing import PMap
 
-# Internal imports
 from carladam import Color, PetriNet, Token
 from carladam.petrinet.marking import MutableMarking, PMarking, pmarking
 

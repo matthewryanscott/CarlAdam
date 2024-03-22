@@ -1,7 +1,5 @@
-# Pip imports
 import pytest
 
-# Internal imports
 from carladam import autoname
 from carladam.petrinet import defaults
 from carladam.petrinet.color import Abstract, Color, color_eq

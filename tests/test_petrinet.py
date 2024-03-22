@@ -1,7 +1,5 @@
-# Pip imports
 import pytest
 
-# Internal imports
 from carladam import Abstract, Color, Token
 from carladam.petrinet import errors
 from carladam.petrinet.errors import TransitionGuardRaisesException, TransitionNotEnabled

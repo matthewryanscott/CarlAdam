@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-# Python imports
 import json
 from typing import Mapping
 
-# Pip imports
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import render
 from pyrsistent import pmap
 
-# Internal imports
 from carladam import PetriNet
 from carladam.django.petrinet_simulator.marking import decode_marking_from_json
 

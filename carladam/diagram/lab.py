@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-# Python imports
 from functools import lru_cache
 
-# Pip imports
 import httpx
 from IPython.display import HTML
 from jinja2 import Template
 
-# Internal imports
 from carladam import (
     Abstract,
     Annotate,
@@ -29,7 +26,6 @@ from carladam.diagram.digraph import graphviz_digraph
 from carladam.diagram.kroki import kroki_image_url, niolesk_edit_url
 from carladam.petrinet.defaults import EMPTY_SET
 
-
 __all__ = [
     "Abstract",
     "Annotate",
@@ -46,7 +42,6 @@ __all__ = [
     "report",
 ]
 
-# Internal imports
 from carladam.petrinet.marking import pmarking
 
 

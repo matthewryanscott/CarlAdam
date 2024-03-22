@@ -1,8 +1,6 @@
-# Pip imports
 import pytest
 from pyrsistent import pset
 
-# Internal imports
 from carladam.petrinet import errors
 from carladam.petrinet.arc import Annotate, TransformEach
 from carladam.petrinet.color import Abstract, Color

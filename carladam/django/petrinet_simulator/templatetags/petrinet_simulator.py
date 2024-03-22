@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-# Python imports
 import json
 from functools import lru_cache
 from textwrap import dedent
 from typing import Sequence
 from urllib.parse import quote
 
-# Pip imports
 import httpx
 from django import template
 from django.utils.safestring import SafeString
 from markdown import markdown as _markdown
 from pyrsistent import PMap, thaw
 
-# Internal imports
 from carladam import Marking, PetriNet, Transition
 from carladam.diagram.digraph import graphviz_digraph
 from carladam.diagram.kroki import NIOLESK_KROKI_URL, kroki_image_url, niolesk_edit_url

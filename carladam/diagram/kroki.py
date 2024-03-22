@@ -1,6 +1,5 @@
 """Interface to the Kroki and Niolesk services."""
 
-# Python imports
 import base64
 import os
 import zlib
@@ -13,7 +12,6 @@ DEFAULT_NIOLESK_KROKI_URL = DEFAULT_KROKI_BASE_URL
 KROKI_BASE_URL = os.getenv("CARLADAM_KROKI_BASE_URL", DEFAULT_KROKI_BASE_URL)
 NIOLESK_BASE_URL = os.getenv("CARLADAM_NIOLESK_BASE_URL", DEFAULT_NIOLESK_BASE_URL)
 NIOLESK_KROKI_URL = os.getenv("CARLADAM_NIOLESK_KROKI_URL", DEFAULT_NIOLESK_KROKI_URL)
-
 
 KROKI_MARKDOWN_TEMPLATE = """\
 ![Diagram]({image_url})

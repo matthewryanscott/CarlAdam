@@ -1,4 +1,3 @@
-# Internal imports
 from carladam.diagram.geometry import auto_layout_nodes
 from carladam.petrinet.petrinet import PetriNet
 from carladam.petrinet.place import Place

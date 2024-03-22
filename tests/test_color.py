@@ -1,4 +1,3 @@
-# Internal imports
 from carladam.petrinet.color import Abstract, Color, color_eq, colorset_string
 
 

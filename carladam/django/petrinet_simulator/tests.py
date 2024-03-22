@@ -1,4 +1,3 @@
-# Pip imports
 # from django.test import TestCase
 
 

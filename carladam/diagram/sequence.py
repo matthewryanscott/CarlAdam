@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-# Python imports
 from functools import lru_cache
 from textwrap import wrap
 from typing import Sequence
 
-# Pip imports
 from pyrsistent import plist, pmap
 from pyrsistent.typing import PList as PListType
 
-# Internal imports
 from carladam import PetriNet, Place, Token, Transition
 from carladam.petrinet.marking import PMarking, pmarking
 

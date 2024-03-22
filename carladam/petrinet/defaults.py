@@ -1,4 +1,3 @@
-# Python imports
 from uuid import uuid4
 
 

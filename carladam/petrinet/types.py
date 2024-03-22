@@ -1,11 +1,8 @@
-# Python imports
 from typing import Iterable, Union
 
-# Internal imports
 from carladam.petrinet.arc import ArcPT, ArcTP, CompletedArcPT, CompletedArcTP
 from carladam.petrinet.place import Place
 from carladam.petrinet.transition import Transition
-
 
 Arc = Union[ArcPT, ArcTP]
 "Union of arc types, used for type annotation."
