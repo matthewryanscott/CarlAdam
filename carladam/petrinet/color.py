@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from itertools import islice
-from typing import TYPE_CHECKING, FrozenSet, Iterator, Mapping, MutableMapping, Protocol, Sequence, Tuple
+from typing import FrozenSet, Iterator, Mapping, MutableMapping, Protocol, Sequence, TYPE_CHECKING, Tuple
 
 from attr import define
 from pyrsistent import pmap
 
 from carladam.petrinet import defaults
-
 
 if TYPE_CHECKING:  # pragma: nocover
     from carladam.petrinet.token import Token, TokenSet
@@ -40,18 +39,19 @@ class Color:
 
         return passthrough({self: quantity})
 
-    def produce(self, quantity: int = 1, **kwargs) -> TransitionFunction:
-        """Return a transition function that generates a given quantity of this color of token."""
+    def token_generator(self, data: Mapping) -> Iterator[Token]:
+        """Return a generator that produces tokens of this color with the given `data`."""
         from carladam.petrinet.token import Token
 
-        initial_data = pmap(kwargs)
+        data = pmap(data)
+        while True:
+            yield Token(color=self, data=data)
 
-        def token_generator() -> Iterator[Token]:
-            while True:
-                yield Token(color=self, data=initial_data)
+    def produce(self, quantity: int = 1, **kwargs) -> TransitionFunction:
+        """Return a transition function that generates a given quantity of this color of token."""
 
         def transition_fn(inputs: TokenSet) -> Iterator[TokenSet]:
-            yield frozenset(islice(token_generator(), quantity))
+            yield frozenset(islice(self.token_generator(kwargs), quantity))
 
         return transition_fn
 
