@@ -78,6 +78,7 @@ def test_token_multiply():
     assert all(t.data == {"foo": "bar"} for t in tokens)
 
 
-def test_token_multiply_not_int():
+@pytest.mark.parametrize("value", [1.2, "string", [], {}, None])
+def test_token_multiply_not_int(value):
     with pytest.raises(TypeError):
-        Token() * 1.2  # noqa
+        Token() * value  # noqa
