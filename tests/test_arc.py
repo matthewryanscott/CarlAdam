@@ -2,7 +2,7 @@ import pytest
 from pyrsistent import pset
 
 from carladam.petrinet import errors
-from carladam.petrinet.arc import Annotate, TransformEach
+from carladam.petrinet.arc import Annotate, CompletedArcPT, CompletedArcTP, TransformEach, arc, weights_are_satisfied
 from carladam.petrinet.color import Abstract, Color
 from carladam.petrinet.marking import marking_colorset
 from carladam.petrinet.petrinet import PetriNet
@@ -97,13 +97,10 @@ def test_weight_shorthand_using_color():
     t = Transition()
     c = Color("C")
 
-    for arc in (
-        p >> c >> t,
-        p << c << t,
-        t >> c >> p,
-        t << c << p,
-    ):
-        assert arc.weight == {c: 1}
+    assert (p >> c >> t).weight == {c: 1}
+    assert (p << c << t).weight == {c: 1}
+    assert (t >> c >> p).weight == {c: 1}
+    assert (t << c << p).weight == {c: 1}
 
 
 def test_weight_shorthand_using_sets():
@@ -246,3 +243,74 @@ def test_arc_pt_guard_raises_exception():
     with pytest.raises(errors.ArcGuardRaisesException) as e:
         net.transition_is_enabled({p: {Token()}}, t)
     assert isinstance(e.value.__cause__, ValueError)
+
+
+def test_arc_factory_place_transition():
+    p = Place()
+    t = Transition()
+    a = arc(p, t)
+    assert isinstance(a, CompletedArcPT)
+    assert a.src == p
+    assert a.dest == t
+    assert a.weight == {Abstract: 1}
+    assert a.annotation is None
+    assert a.transform is None
+    assert a.guard is weights_are_satisfied
+
+
+def test_arc_factory_place_transition_colorset():
+    p = Place()
+    t = Transition()
+    c = Color("c")
+    a = arc(p, t, {c: 2})
+    assert isinstance(a, CompletedArcPT)
+    assert a.src == p
+    assert a.dest == t
+    assert a.weight == {c: 2}
+    assert a.annotation is None
+    assert a.transform is None
+    assert a.guard is weights_are_satisfied
+
+
+@pytest.mark.parametrize(
+    "weight, actual_weight",
+    [
+        (None, {Abstract: 1}),
+        (Abstract, {Abstract: 1}),
+        ({Abstract: 2}, {Abstract: 2}),
+    ],
+)
+def test_arc_factory_transition_place_colorset(weight, actual_weight):
+    p = Place()
+    t = Transition()
+    a = arc(t, p, weight)
+    assert isinstance(a, CompletedArcTP)
+    assert a.src == t
+    assert a.dest == p
+    assert a.weight == actual_weight
+    assert a.annotation is None
+    assert a.transform is None
+
+
+def test_arc_factory_transition_place():
+    p = Place()
+    t = Transition()
+    a = arc(t, p)
+    assert isinstance(a, CompletedArcTP)
+    assert a.src == t
+    assert a.dest == p
+    assert a.weight == {Abstract: 1}
+    assert a.annotation is None
+    assert a.transform is None
+
+
+@pytest.mark.parametrize(
+    "src, dest",
+    [
+        (Place(), Place()),
+        (Transition(), Transition()),
+    ],
+)
+def test_arc_factory_raises_type_error_for_incompatible_nodes(src, dest):
+    with pytest.raises(TypeError):
+        arc(src, dest)

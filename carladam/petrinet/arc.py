@@ -16,13 +16,49 @@ from attr.validators import instance_of, optional
 from pyrsistent import pmap
 
 from carladam.petrinet import defaults, errors
-from carladam.petrinet.color import Abstract, ColorSet, colorset_string
+from carladam.petrinet.color import Abstract, Color, ColorSet, colorset_string
 from carladam.petrinet.place import Place
 from carladam.petrinet.token import Token, TokenSet
 from carladam.petrinet.transition import Transition
 
 if TYPE_CHECKING:  # pragma: nocover
     from carladam.petrinet.types import Arc
+
+
+@overload
+def arc(
+    src: Place,
+    dest: Transition,
+    weight: Color | ColorSet = None,
+    *,
+    annotation: str = None,
+    transform: Callable = None,
+    guard: Callable = None,
+) -> CompletedArcPT: ...
+
+
+@overload
+def arc(
+    src: Transition,
+    dest: Place,
+    weight: Color | ColorSet = None,
+    *,
+    annotation: str = None,
+    transform: Callable = None,
+    guard: Callable = None,
+) -> CompletedArcTP: ...
+
+
+def arc(src, dest, weight=None, **kwargs):
+    if isinstance(weight, Color):
+        weight = {weight: 1}
+    elif weight is None:
+        weight = {Abstract: 1}
+    if isinstance(src, Place) and isinstance(dest, Transition):
+        return CompletedArcPT(src, dest, weight, **kwargs)
+    if isinstance(src, Transition) and isinstance(dest, Place):
+        return CompletedArcTP(src, dest, weight, **kwargs)
+    raise TypeError("Arcs must be from Place to Transition or Transition to Place.")
 
 
 def __arc_hash__(self):
