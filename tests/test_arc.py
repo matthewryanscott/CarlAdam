@@ -2,7 +2,7 @@ import pytest
 from pyrsistent import pset
 
 from carladam.petrinet import errors
-from carladam.petrinet.arc import Annotate, TransformEach
+from carladam.petrinet.arc import Annotate, CompletedArcPT, CompletedArcTP, TransformEach, arc
 from carladam.petrinet.color import Abstract, Color
 from carladam.petrinet.marking import marking_colorset
 from carladam.petrinet.petrinet import PetriNet
@@ -246,3 +246,29 @@ def test_arc_pt_guard_raises_exception():
     with pytest.raises(errors.ArcGuardRaisesException) as e:
         net.transition_is_enabled({p: {Token()}}, t)
     assert isinstance(e.value.__cause__, ValueError)
+
+
+@pytest.mark.parametrize(
+    "src, dest, expected_type",
+    [
+        (Place(), Transition(), CompletedArcPT),
+        (Transition(), Place(), CompletedArcTP),
+    ],
+)
+def test_arc_factory(src, dest, expected_type):
+    a = arc(src, dest)
+    assert a.src == src
+    assert a.dest == dest
+    assert isinstance(a, expected_type)
+
+
+@pytest.mark.parametrize(
+    "src, dest",
+    [
+        (Place(), Place()),
+        (Transition(), Transition()),
+    ],
+)
+def test_arc_factory_raises_type_error_for_incompatible_nodes(src, dest):
+    with pytest.raises(TypeError):
+        arc(src, dest)

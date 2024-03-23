@@ -25,6 +25,38 @@ if TYPE_CHECKING:  # pragma: nocover
     from carladam.petrinet.types import Arc
 
 
+@overload
+def arc(
+    src: Place,
+    dest: Transition,
+    /,
+    weight: ColorSet = None,
+    annotation: str = None,
+    transform: Callable = None,
+    guard: Callable = None,
+) -> CompletedArcPT: ...
+
+
+@overload
+def arc(
+    src: Transition,
+    dest: Place,
+    /,
+    weight: ColorSet = None,
+    annotation: str = None,
+    transform: Callable = None,
+    guard: Callable = None,
+) -> CompletedArcTP: ...
+
+
+def arc(src, dest, **kwargs):
+    if isinstance(src, Place) and isinstance(dest, Transition):
+        return CompletedArcPT(src, dest, **kwargs)
+    if isinstance(src, Transition) and isinstance(dest, Place):
+        return CompletedArcTP(src, dest, **kwargs)
+    raise TypeError("Arcs must be from Place to Transition or Transition to Place.")
+
+
 def __arc_hash__(self):
     """Common implementation of `__hash__` for all Arc types."""
     return hash((self.src, self.dest, frozenset(self.weight.items())))
