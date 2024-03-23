@@ -103,7 +103,8 @@ class Occurrence:
             place = arc.src
             colors_left = dict(arc.weight)
             inputs_to_add = set()
-            for token in self.marking[place]:
+            tokens = self.marking.get(place, ())
+            for token in tokens:
                 if colors_left.get(token.color, 0):
                     inputs_to_add.add(token)
                     effects.append(Consume(arc=arc, token=token))
