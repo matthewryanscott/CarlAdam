@@ -2,7 +2,7 @@ import pytest
 from pyrsistent import pset
 
 from carladam.petrinet import errors
-from carladam.petrinet.arc import Annotate, CompletedArcPT, CompletedArcTP, TransformEach, arc
+from carladam.petrinet.arc import Annotate, CompletedArcPT, CompletedArcTP, TransformEach, arc, weights_are_satisfied
 from carladam.petrinet.color import Abstract, Color
 from carladam.petrinet.marking import marking_colorset
 from carladam.petrinet.petrinet import PetriNet
@@ -248,18 +248,29 @@ def test_arc_pt_guard_raises_exception():
     assert isinstance(e.value.__cause__, ValueError)
 
 
-@pytest.mark.parametrize(
-    "src, dest, expected_type",
-    [
-        (Place(), Transition(), CompletedArcPT),
-        (Transition(), Place(), CompletedArcTP),
-    ],
-)
-def test_arc_factory(src, dest, expected_type):
-    a = arc(src, dest)
-    assert a.src == src
-    assert a.dest == dest
-    assert isinstance(a, expected_type)
+def test_arc_factory_place_transition():
+    p = Place()
+    t = Transition()
+    a = arc(p, t)
+    assert isinstance(a, CompletedArcPT)
+    assert a.src == p
+    assert a.dest == t
+    assert a.weight == {Abstract: 1}
+    assert a.annotation is None
+    assert a.transform is None
+    assert a.guard is weights_are_satisfied
+
+
+def test_arc_factory_transition_place():
+    p = Place()
+    t = Transition()
+    a = arc(t, p)
+    assert isinstance(a, CompletedArcTP)
+    assert a.src == t
+    assert a.dest == p
+    assert a.weight == {Abstract: 1}
+    assert a.annotation is None
+    assert a.transform is None
 
 
 @pytest.mark.parametrize(
