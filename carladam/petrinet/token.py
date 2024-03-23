@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from itertools import repeat
 from typing import AbstractSet, Any, Callable, Mapping
 
 from attr import Factory, define, field
@@ -49,7 +48,7 @@ class Token:
     def __mul__(self, quantity: int) -> TokenSet:
         if not isinstance(quantity, int):
             raise TypeError("Can only multiply tokens by integers")
-        return frozenset(clone() for clone in repeat(self.clone, quantity))
+        return frozenset(self.clone() for _ in range(quantity))
 
     def __repr__(self):
         if self.name == self.id:
