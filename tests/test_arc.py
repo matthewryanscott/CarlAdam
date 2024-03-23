@@ -258,6 +258,33 @@ def test_arc_factory_place_transition():
     assert a.guard is weights_are_satisfied
 
 
+def test_arc_factory_place_transition_colorset():
+    p = Place()
+    t = Transition()
+    c = Color("c")
+    a = arc(p, t, {c: 2})
+    assert isinstance(a, CompletedArcPT)
+    assert a.src == p
+    assert a.dest == t
+    assert a.weight == {c: 2}
+    assert a.annotation is None
+    assert a.transform is None
+    assert a.guard is weights_are_satisfied
+
+
+def test_arc_factory_transition_place_colorset():
+    p = Place()
+    t = Transition()
+    c = Color("c")
+    a = arc(t, p, {c: 2})
+    assert isinstance(a, CompletedArcTP)
+    assert a.src == t
+    assert a.dest == p
+    assert a.weight == {c: 2}
+    assert a.annotation is None
+    assert a.transform is None
+
+
 def test_arc_factory_transition_place():
     p = Place()
     t = Transition()
