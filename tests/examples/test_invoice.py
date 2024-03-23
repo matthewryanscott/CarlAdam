@@ -1,5 +1,6 @@
 import pytest
 
+from carladam import arc
 from carladam.petrinet.color import Color
 from carladam.petrinet.marking import Marking, marking_colorset
 from carladam.petrinet.petrinet import PetriNet
@@ -33,25 +34,25 @@ class InvoiceNet(PetriNet):
 
         # Arcs
         arcs = {
-            P.approval_pending >> Invoice >> T.approve,
-            P.approved >> Invoice >> T.create_payment_order,
-            P.destination_account >> Invoice >> T.create_payment_order,
-            P.destination_pending >> Invoice >> T.define_vendor_account,
-            P.has_amount >> Invoice >> T.post_invoice,
-            P.has_vendor >> Invoice >> T.post_invoice,
-            P.invoice_in_draft >> Invoice >> T.post_invoice,
-            P.invoice_posted >> Invoice >> T.create_payment_order,
-            P.origin_account >> Invoice >> T.create_payment_order,
-            T.approve >> Invoice >> P.approved,
-            T.create_invoice >> Invoice >> P.has_amount,
-            T.create_invoice >> Invoice >> P.has_vendor,
-            T.create_invoice >> Invoice >> P.invoice_in_draft,
-            T.create_payment_order >> Invoice >> P.balance_due,
-            T.define_vendor_account >> Invoice >> P.destination_account,
-            T.post_invoice >> Invoice >> P.approval_pending,
-            T.post_invoice >> Invoice >> P.destination_pending,
-            T.post_invoice >> Invoice >> P.invoice_posted,
-            T.post_invoice >> Invoice >> P.origin_account,
+            arc(P.approval_pending, T.approve, Invoice),
+            arc(P.approved, T.create_payment_order, Invoice),
+            arc(P.destination_account, T.create_payment_order, Invoice),
+            arc(P.destination_pending, T.define_vendor_account, Invoice),
+            arc(P.has_amount, T.post_invoice, Invoice),
+            arc(P.has_vendor, T.post_invoice, Invoice),
+            arc(P.invoice_in_draft, T.post_invoice, Invoice),
+            arc(P.invoice_posted, T.create_payment_order, Invoice),
+            arc(P.origin_account, T.create_payment_order, Invoice),
+            arc(T.approve, P.approved, Invoice),
+            arc(T.create_invoice, P.has_amount, Invoice),
+            arc(T.create_invoice, P.has_vendor, Invoice),
+            arc(T.create_invoice, P.invoice_in_draft, Invoice),
+            arc(T.create_payment_order, P.balance_due, Invoice),
+            arc(T.define_vendor_account, P.destination_account, Invoice),
+            arc(T.post_invoice, P.approval_pending, Invoice),
+            arc(T.post_invoice, P.destination_pending, Invoice),
+            arc(T.post_invoice, P.invoice_posted, Invoice),
+            arc(T.post_invoice, P.origin_account, Invoice),
         }
 
 

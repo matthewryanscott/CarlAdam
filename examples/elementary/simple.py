@@ -1,4 +1,5 @@
 from carladam import PetriNet, Place, Token, Transition
+from carladam.petrinet.arc import arc
 
 
 class SimplePetriNet(PetriNet):
@@ -17,8 +18,8 @@ class SimplePetriNet(PetriNet):
             t = Transition()
 
         arcs = {
-            P.p0 >> T.t,
-            T.t >> P.p1,
+            arc(P.p0, T.t),
+            arc(T.t, P.p1),
         }
         example_markings = {
             "Start here": {
