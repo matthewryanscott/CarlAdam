@@ -43,9 +43,9 @@ class Color:
         """Return a generator that produces tokens of this color with the given `data`."""
         from carladam.petrinet.token import Token
 
-        data = pmap(data)
+        pdata = pmap(data)
         while True:
-            yield Token(color=self, data=data)
+            yield Token(color=self, data=pdata)
 
     def produce(self, quantity: int = 1, **kwargs) -> TransitionFunction:
         """Return a transition function that generates a given quantity of this color of token."""
