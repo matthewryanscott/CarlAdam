@@ -1,10 +1,8 @@
-# Internal imports
-from carladam import Abstract, Annotate, Color, PetriNet, Place, Token, TransformEach, Transition
-
+from carladam import Abstract, Annotate, Color, PetriNet, Place, TransformEach, Transition
 
 Coin = Color("🪙")
 Packet = Color("📦")
-Counter = Color("🖩")
+Counter = Color("🧮")
 
 
 def x_minus_1(token):
@@ -16,8 +14,8 @@ def counter_x_gt_0(inputs):
     return all(counter.data["x"] > 0 for counter in counters)
 
 
-class UnderstandingPetriNetsVendingMachine(PetriNet):
-    """Full vending machine example from figure 1.12"""
+class UnderstandingPetriNetsFigure_1_10_11(PetriNet):  # noqa
+    """Understanding Petri Nets: Figures 1.10, 1.11"""
 
     class Structure:
         class P:
@@ -25,8 +23,6 @@ class UnderstandingPetriNetsVendingMachine(PetriNet):
             coin_slot = Place()
             compartment = Place()
             counter = Place()
-            insertion_possible = Place()
-            no_signal = Place()
             signal = Place()
             storage = Place()
 
@@ -46,37 +42,31 @@ class UnderstandingPetriNetsVendingMachine(PetriNet):
             P.coin_slot >> Coin >> T.return_coin,
             P.compartment >> Packet >> T.take_packet,
             P.counter >> Counter >> Annotate("x") >> T.a,
-            P.insertion_possible >> T.insert_coin,
-            P.no_signal >> T.a,
             P.signal >> T.b,
             P.storage >> Packet >> T.b,
             T.a >> Coin >> P.cash_box,
             T.a >> Counter >> Annotate("x-1") >> TransformEach(x_minus_1) >> P.counter,
-            T.a >> P.insertion_possible,
             T.a >> P.signal,
             T.b >> Packet >> P.compartment,
-            T.b >> P.no_signal,
             T.insert_coin >> Coin >> P.coin_slot,
-            T.return_coin >> P.insertion_possible,
         }
 
         example_markings = {
-            "Start here": {
-                P.counter: {Counter(x=5)},
-                P.insertion_possible: {Token()},
-                P.no_signal: {Token()},
-                P.storage: {Packet(), Packet(), Packet(), Packet(), Packet()},
-            },
-            "Coin inserted": {
+            "Figure 1.10: Addition of a counter": {
                 P.coin_slot: {Coin()},
                 P.counter: {Counter(x=5)},
-                P.no_signal: {Token()},
-                P.storage: {Packet(), Packet(), Packet(), Packet(), Packet()},
+                P.storage: Packet() * 5,
+            },
+            "Figure 1.11: After the occurrence of a": {
+                P.counter: {Counter(x=4)},
+                P.storage: Packet() * 5,
+                P.cash_box: {Coin()},
+                P.signal: {Abstract()},
             },
         }
 
         clusters = {
-            "Happy Path": {
+            "": {
                 T.insert_coin,
                 P.coin_slot,
                 T.a,
@@ -84,5 +74,5 @@ class UnderstandingPetriNetsVendingMachine(PetriNet):
                 T.b,
                 P.compartment,
                 T.take_packet,
-            }
+            },
         }

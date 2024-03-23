@@ -70,3 +70,15 @@ def test_one():
     assert one()({t0}) == t0
     with pytest.raises(ValueError):
         one()({t0, t1})
+
+
+def test_token_multiply():
+    tokens = Token(data={"foo": "bar"}) * 3
+    assert len(tokens) == 3
+    assert all(t.data == {"foo": "bar"} for t in tokens)
+
+
+@pytest.mark.parametrize("value", [1.2, "string", [], {}, None])
+def test_token_multiply_not_int(value):
+    with pytest.raises(TypeError):
+        Token() * value  # noqa
