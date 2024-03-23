@@ -1,8 +1,5 @@
-from carladam import PetriNet, Place, Token, Transition
-
-
-def inhibitor(arc, tokens):
-    return not tokens
+from carladam import PetriNet, Place, Token, Transition, arc
+from carladam.petrinet.arc import inhibitor_arc
 
 
 class SimplePetriNetInhibitor(PetriNet):
@@ -19,9 +16,9 @@ class SimplePetriNetInhibitor(PetriNet):
             t = Transition()
 
         arcs = {
-            (P.p0 >> T.t)(annotation="⃝", guard=inhibitor),
-            (P.p1 >> T.t)(annotation="⃝", guard=inhibitor),
-            T.t >> P.p1,
+            arc(T.t, P.p1),
+            inhibitor_arc(P.p0, T.t),
+            inhibitor_arc(P.p1, T.t),
         }
 
         example_markings = {
@@ -47,14 +44,14 @@ class YesNoInhibitor(PetriNet):
             no = Transition()
 
         arcs = {
-            P.input >> T.yes,
-            (P.input >> T.no)(guard=inhibitor),
-            (P.no >> T.no)(annotation="⃝", guard=inhibitor),
-            (P.yes >> T.no)(annotation="⃝", guard=inhibitor),
-            (P.no >> T.yes)(annotation="⃝", guard=inhibitor),
-            (P.yes >> T.yes)(annotation="⃝", guard=inhibitor),
-            T.yes >> P.yes,
-            T.no >> P.no,
+            arc(P.input, T.yes),
+            arc(T.no, P.no),
+            arc(T.yes, P.yes),
+            inhibitor_arc(P.input, T.no),
+            inhibitor_arc(P.no, T.no),
+            inhibitor_arc(P.no, T.yes),
+            inhibitor_arc(P.yes, T.no),
+            inhibitor_arc(P.yes, T.yes),
         }
 
         example_markings = {
