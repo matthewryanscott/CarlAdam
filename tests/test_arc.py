@@ -97,13 +97,10 @@ def test_weight_shorthand_using_color():
     t = Transition()
     c = Color("C")
 
-    for arc in (
-        p >> c >> t,
-        p << c << t,
-        t >> c >> p,
-        t << c << p,
-    ):
-        assert arc.weight == {c: 1}
+    assert (p >> c >> t).weight == {c: 1}
+    assert (p << c << t).weight == {c: 1}
+    assert (t >> c >> p).weight == {c: 1}
+    assert (t << c << p).weight == {c: 1}
 
 
 def test_weight_shorthand_using_sets():
