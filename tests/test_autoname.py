@@ -1,4 +1,4 @@
-from carladam import PetriNet
+from carladam import PetriNet, arc
 from carladam.petrinet.place import Place
 from carladam.petrinet.transition import Transition
 from carladam.util.autoname import autoname
@@ -52,3 +52,17 @@ def test_autoname_petrinet_structure_subclass():
 
     assert ExampleNet.Structure.P.p0.name == "P0"
     assert ExampleNet.Structure.T.t0.name == "T0"
+
+
+def test_autoname_petrinet_structure_subclass_no_inner_classes():
+    class ExampleNet(PetriNet):
+        class Structure:
+            p0 = Place()
+
+            t0 = Transition()
+
+            a0 = arc(p0, t0)
+            a1 = arc(t0, p0)
+
+    assert ExampleNet.Structure.p0.name == "P0"
+    assert ExampleNet.Structure.t0.name == "T0"
