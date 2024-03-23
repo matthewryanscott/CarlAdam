@@ -33,7 +33,7 @@
         <p>Initial marking:</p>
         <ul>
             {% for place, tokens in initial_marking_items %}
-                <li>{{ place }}: {% for token in tokens %}{{ token }} {% endfor %}</li>
+                <li>{{ place.name }}: {% for token in tokens %}{{ token }} {% endfor %}</li>
             {% empty %}
                 <li>∅</li>
             {% endfor %}
@@ -96,7 +96,7 @@
         </div>
     {% endif %}
 
-    {% if transitions %}
+    {% if transitions and show_sequence_diagram %}
         <div style="display: inline-block; vertical-align: top">
             <p>Sequence diagram:</p>
             <div>
