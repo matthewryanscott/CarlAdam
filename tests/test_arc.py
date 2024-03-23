@@ -272,15 +272,22 @@ def test_arc_factory_place_transition_colorset():
     assert a.guard is weights_are_satisfied
 
 
-def test_arc_factory_transition_place_colorset():
+@pytest.mark.parametrize(
+    "weight, actual_weight",
+    [
+        (None, {Abstract: 1}),
+        (Abstract, {Abstract: 1}),
+        ({Abstract: 2}, {Abstract: 2}),
+    ],
+)
+def test_arc_factory_transition_place_colorset(weight, actual_weight):
     p = Place()
     t = Transition()
-    c = Color("c")
-    a = arc(t, p, {c: 2})
+    a = arc(t, p, weight)
     assert isinstance(a, CompletedArcTP)
     assert a.src == t
     assert a.dest == p
-    assert a.weight == {c: 2}
+    assert a.weight == actual_weight
     assert a.annotation is None
     assert a.transform is None
 
