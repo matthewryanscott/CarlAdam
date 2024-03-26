@@ -1,6 +1,5 @@
 import contextlib
 import importlib.util
-import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, Type
@@ -67,7 +66,14 @@ def main():
     settings.CARLADAM_SIMULATOR_PETRINETS = petrinets
 
     arg0, *args = sys.argv
-    for arg in args:
+
+    if "--" in args:
+        separator_index = args.index("--")
+        runserver_args, simulator_args = args[:separator_index], args[separator_index + 1 :]
+    else:
+        runserver_args, simulator_args = [], args
+
+    for arg in simulator_args:
         with contextlib.suppress(ImportError, ValueError):
             petrinet_cls = module_loading.import_string(arg)
             if is_petrinet_subclass(petrinet_cls):
@@ -105,9 +111,7 @@ def main():
     print("\n".join(f"- {key}" for key in sorted(petrinets)))
     print("")
 
-    listen_on = os.getenv("CARLADAM_LISTEN_ON", "127.0.0.1:8000")
-
-    management.execute_from_command_line([arg0, "runserver", listen_on])
+    management.execute_from_command_line([arg0, "runserver", *runserver_args])
 
 
 if __name__ == "__main__":
