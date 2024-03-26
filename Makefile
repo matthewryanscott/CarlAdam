@@ -9,4 +9,4 @@ test:
 		tests
 
 simulator:
-	poetry run python -m carladam.django.simulator examples
+	poetry run python -m carladam.django.simulator -- localhost:8000 -- examples

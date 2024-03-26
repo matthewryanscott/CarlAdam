@@ -16,10 +16,8 @@ services:
       context: .
     ports:
       - "8000:8000"
-    command:
-      - "poetry run python -m carladam.django.simulator examples"
+    command: "poetry run python -m carladam.django.simulator -- 0.0.0.0:8000 -- examples"
     environment:
-      - "CARLADAM_LISTEN_ON=0.0.0.0:8000"
       - "CARLADAM_KROKI_BASE_URL=http://kroki:8000/"
       - "CARLADAM_NIOLESK_BASE_URL=http://localhost:8002/"
       - "CARLADAM_NIOLESK_KROKI_URL=http://localhost:8001/"
