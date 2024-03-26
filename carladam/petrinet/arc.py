@@ -17,6 +17,7 @@ from pyrsistent import pmap
 
 from carladam.petrinet import defaults, errors
 from carladam.petrinet.color import Abstract, Color, ColorSet, colorset_string
+from carladam.petrinet.defaults import INHIBITOR
 from carladam.petrinet.place import Place
 from carladam.petrinet.token import Token, TokenSet
 from carladam.petrinet.transition import Transition
@@ -61,6 +62,10 @@ def arc(src, dest, weight=None, **kwargs):
     raise TypeError("Arcs must be from Place to Transition or Transition to Place.")
 
 
+def inhibitor_arc(src: Place, dest: Transition, *args, **kwargs):
+    return arc(src, dest, *args, annotation=INHIBITOR, **kwargs, guard=inhibit)
+
+
 def __arc_hash__(self):
     """Common implementation of `__hash__` for all Arc types."""
     return hash((self.src, self.dest, frozenset(self.weight.items())))
@@ -91,6 +96,10 @@ def weights_are_satisfied(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bo
         return False
     # Do the tokens satisfy all of the quantities specified by the arc weight?
     return all(arc.weight[color] <= count for color, count in colors.items())
+
+
+def inhibit(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bool:
+    return not tokens
 
 
 @define

@@ -2,7 +2,15 @@ import pytest
 from pyrsistent import pset
 
 from carladam.petrinet import errors
-from carladam.petrinet.arc import Annotate, CompletedArcPT, CompletedArcTP, TransformEach, arc, weights_are_satisfied
+from carladam.petrinet.arc import (
+    Annotate,
+    CompletedArcPT,
+    CompletedArcTP,
+    TransformEach,
+    arc,
+    inhibitor_arc,
+    weights_are_satisfied,
+)
 from carladam.petrinet.color import Abstract, Color
 from carladam.petrinet.marking import marking_colorset
 from carladam.petrinet.petrinet import PetriNet
@@ -314,3 +322,14 @@ def test_arc_factory_transition_place():
 def test_arc_factory_raises_type_error_for_incompatible_nodes(src, dest):
     with pytest.raises(TypeError):
         arc(src, dest)
+
+
+def test_inhibitor_arc():
+    net = PetriNet.new(
+        p0 := Place(),
+        t := Transition(),
+        p1 := Place(),
+        inhibitor_arc(p0, t),
+        arc(t, p1),
+    )
+    assert marking_colorset(net.marking_after_transition({}, t)) == {p1: {Abstract: 1}}

@@ -20,3 +20,6 @@ EMPTY_SET = "∅"
 
 ABSTRACT_TOKEN = "⚫️"
 """Color name given to abstract tokens."""
+
+INHIBITOR = "⭘"
+"""Decoration for inhibitor arcs."""
