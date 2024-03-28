@@ -329,6 +329,8 @@ def test_arc_path():
     p1, p2, p3 = Place(), Place(), Place()
     t1, t2 = Transition(), Transition()
     assert list(arc_path(p1, t1, p2, t2, p3)) == [arc(p1, t1), arc(t1, p2), arc(p2, t2), arc(t2, p3)]
+    assert not list(arc_path())
+    assert not list(arc_path(p1))
 
 
 def test_inhibitor_arc():
