@@ -4,7 +4,7 @@ CarlAdam models Petri nets in Python.
 This top-level module exports commonly used classes and functions.
 """
 
-from carladam.petrinet.arc import Annotate, TransformEach, arc
+from carladam.petrinet.arc import Annotate, TransformEach, arc, arc_path
 from carladam.petrinet.color import Abstract, Color, color_eq
 from carladam.petrinet.marking import Marking
 from carladam.petrinet.petrinet import PetriNet
@@ -29,6 +29,7 @@ __all__ = [
     "Transition",
     "__",
     "arc",
+    "arc_path",
     "autoname",
     "color_eq",
     "one",

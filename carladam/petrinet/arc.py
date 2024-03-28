@@ -62,12 +62,23 @@ def arc(src, dest, weight=None, **kwargs):
     raise TypeError("Arcs must be from Place to Transition or Transition to Place.")
 
 
-def inhibitor_arc(src: Place, dest: Transition, *args, **kwargs):
+def arc_path(*nodes):
     """
-    Create an inhibitor arc from a place to a transition.
+    Link places and transitions together in series using `arc`.
 
-    Inhibitor arcs prevent transitions from firing if the place has any tokens.
+    Example:
+
+        >>> from carladam import Place, Transition, arc, arc_path
+        >>> p1, p2, p3 = Place(), Place(), Place()
+        >>> t1, t2 = Transition(), Transition()
+        >>> list(arc_path(p1, t1, p2, t2, p3)) == [arc(p1, t1), arc(t1, p2), arc(p2, t2), arc(t2, p3)]
+        True
     """
+    for src, dest in zip(nodes, nodes[1:]):
+        yield arc(src, dest)
+
+
+def inhibitor_arc(src: Place, dest: Transition, *args, **kwargs):
     return arc(src, dest, *args, annotation=INHIBITOR, **kwargs, guard=inhibit)
 
 
@@ -95,7 +106,6 @@ def default_arc_weight() -> ColorSet:
 
 
 def weights_are_satisfied(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bool:
-    """Default arc guard: Checks if the tokens satisfy the arc's weight."""
     colors: ColorSet = Counter(token.color for token in tokens)
     # Do the tokens have all the colors specified by the arc weight?
     if frozenset(arc.weight) - frozenset(colors):
@@ -105,7 +115,6 @@ def weights_are_satisfied(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bo
 
 
 def inhibit(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bool:
-    """Arc guard: Inhibits a transition from firing if the place has any tokens."""
     return not tokens
 
 

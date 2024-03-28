@@ -8,6 +8,7 @@ from carladam.petrinet.arc import (
     CompletedArcTP,
     TransformEach,
     arc,
+    arc_path,
     inhibitor_arc,
     weights_are_satisfied,
 )
@@ -322,6 +323,12 @@ def test_arc_factory_transition_place():
 def test_arc_factory_raises_type_error_for_incompatible_nodes(src, dest):
     with pytest.raises(TypeError):
         arc(src, dest)
+
+
+def test_arc_path():
+    p1, p2, p3 = Place(), Place(), Place()
+    t1, t2 = Transition(), Transition()
+    assert list(arc_path(p1, t1, p2, t2, p3)) == [arc(p1, t1), arc(t1, p2), arc(p2, t2), arc(t2, p3)]
 
 
 def test_inhibitor_arc():
