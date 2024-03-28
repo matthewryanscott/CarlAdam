@@ -1,8 +1,5 @@
-from carladam import PetriNet, Place, Token, Transition
-
-
-def inhibitor(arc, tokens):
-    return not tokens
+from carladam import PetriNet, Place, Token, Transition, arc
+from carladam.petrinet.arc import inhibitor_arc
 
 
 class SimplePetriNetInhibitor(PetriNet):
@@ -11,22 +8,20 @@ class SimplePetriNetInhibitor(PetriNet):
     """
 
     class Structure:
-        class P:
-            p0 = Place()
-            p1 = Place()
+        p0 = Place()
+        p1 = Place()
 
-        class T:
-            t = Transition()
+        t = Transition()
 
         arcs = {
-            (P.p0 >> T.t)(annotation="⃝", guard=inhibitor),
-            (P.p1 >> T.t)(annotation="⃝", guard=inhibitor),
-            T.t >> P.p1,
+            arc(t, p1),
+            inhibitor_arc(p0, t),
+            inhibitor_arc(p1, t),
         }
 
         example_markings = {
             "Start here": {
-                P.p0: {Token()},
+                p0: {Token()},
             }
         }
 
@@ -37,29 +32,27 @@ class YesNoInhibitor(PetriNet):
     """
 
     class Structure:
-        class P:
-            input = Place()
-            yes = Place()
-            no = Place()
+        input = Place()
+        yes_chosen = Place()
+        no_chosen = Place()
 
-        class T:
-            yes = Transition()
-            no = Transition()
+        yes = Transition()
+        no = Transition()
 
         arcs = {
-            P.input >> T.yes,
-            (P.input >> T.no)(guard=inhibitor),
-            (P.no >> T.no)(annotation="⃝", guard=inhibitor),
-            (P.yes >> T.no)(annotation="⃝", guard=inhibitor),
-            (P.no >> T.yes)(annotation="⃝", guard=inhibitor),
-            (P.yes >> T.yes)(annotation="⃝", guard=inhibitor),
-            T.yes >> P.yes,
-            T.no >> P.no,
+            arc(input, yes),
+            arc(yes, yes_chosen),
+            inhibitor_arc(input, no),
+            inhibitor_arc(yes_chosen, no),
+            inhibitor_arc(yes_chosen, yes),
+            arc(no, no_chosen),
+            inhibitor_arc(no_chosen, no),
+            inhibitor_arc(no_chosen, yes),
         }
 
         example_markings = {
             "Yes enabled": {
-                P.input: {Token()},
+                input: {Token()},
             },
             "No enabled": {},
         }
