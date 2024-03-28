@@ -63,6 +63,11 @@ def arc(src, dest, weight=None, **kwargs):
 
 
 def inhibitor_arc(src: Place, dest: Transition, *args, **kwargs):
+    """
+    Create an inhibitor arc from a place to a transition.
+
+    Inhibitor arcs prevent transitions from firing if the place has any tokens.
+    """
     return arc(src, dest, *args, annotation=INHIBITOR, **kwargs, guard=inhibit)
 
 
@@ -90,6 +95,7 @@ def default_arc_weight() -> ColorSet:
 
 
 def weights_are_satisfied(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bool:
+    """Default arc guard: Checks if the tokens satisfy the arc's weight."""
     colors: ColorSet = Counter(token.color for token in tokens)
     # Do the tokens have all the colors specified by the arc weight?
     if frozenset(arc.weight) - frozenset(colors):
@@ -99,6 +105,7 @@ def weights_are_satisfied(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bo
 
 
 def inhibit(arc: CompletedArcPT, tokens: AbstractSet[Token]) -> bool:
+    """Arc guard: Inhibits a transition from firing if the place has any tokens."""
     return not tokens
 
 
