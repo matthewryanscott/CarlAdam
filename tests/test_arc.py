@@ -333,3 +333,4 @@ def test_inhibitor_arc():
         arc(t, p1),
     )
     assert marking_colorset(net.marking_after_transition({}, t)) == {p1: {Abstract: 1}}
+    assert not net.transition_is_enabled({p0: {Abstract()}}, t)
