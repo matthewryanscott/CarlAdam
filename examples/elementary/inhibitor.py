@@ -8,22 +8,20 @@ class SimplePetriNetInhibitor(PetriNet):
     """
 
     class Structure:
-        class P:
-            p0 = Place()
-            p1 = Place()
+        p0 = Place()
+        p1 = Place()
 
-        class T:
-            t = Transition()
+        t = Transition()
 
         arcs = {
-            arc(T.t, P.p1),
-            inhibitor_arc(P.p0, T.t),
-            inhibitor_arc(P.p1, T.t),
+            arc(t, p1),
+            inhibitor_arc(p0, t),
+            inhibitor_arc(p1, t),
         }
 
         example_markings = {
             "Start here": {
-                P.p0: {Token()},
+                p0: {Token()},
             }
         }
 
@@ -34,29 +32,27 @@ class YesNoInhibitor(PetriNet):
     """
 
     class Structure:
-        class P:
-            input = Place()
-            yes = Place()
-            no = Place()
+        input = Place()
+        yes_chosen = Place()
+        no_chosen = Place()
 
-        class T:
-            yes = Transition()
-            no = Transition()
+        yes = Transition()
+        no = Transition()
 
         arcs = {
-            arc(P.input, T.yes),
-            arc(T.no, P.no),
-            arc(T.yes, P.yes),
-            inhibitor_arc(P.input, T.no),
-            inhibitor_arc(P.no, T.no),
-            inhibitor_arc(P.no, T.yes),
-            inhibitor_arc(P.yes, T.no),
-            inhibitor_arc(P.yes, T.yes),
+            arc(input, yes),
+            arc(yes, yes_chosen),
+            inhibitor_arc(input, no),
+            inhibitor_arc(yes_chosen, no),
+            inhibitor_arc(yes_chosen, yes),
+            arc(no, no_chosen),
+            inhibitor_arc(no_chosen, no),
+            inhibitor_arc(no_chosen, yes),
         }
 
         example_markings = {
             "Yes enabled": {
-                P.input: {Token()},
+                input: {Token()},
             },
             "No enabled": {},
         }
