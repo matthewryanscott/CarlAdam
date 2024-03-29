@@ -3,6 +3,18 @@ name = "CarlAdam"
 version = "0.1.0"
 description = "Petri net tools and interactive simulator"
 authors = ["Matthew Scott <carladam@opensource.matthewryanscott.com>"]
+readme = "README.md"
+repository = "https://github.com/matthewryanscott/CarlAdam"
+license = "MIT"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: Django",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 [tool.poetry.dependencies]
 attrs = "^23.2.0"
