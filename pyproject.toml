@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "CarlAdam"
 version = "0.1.0"
-description = "Petri Net tools for Python"
-authors = ["Matthew Scott <matt@11craft.com>"]
+description = "Petri net tools and interactive simulator"
+authors = ["Matthew Scott <carladam@opensource.matthewryanscott.com>"]
 
 [tool.poetry.dependencies]
 attrs = "^23.2.0"
