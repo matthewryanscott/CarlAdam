@@ -60,7 +60,7 @@ directory = "../public/static/htmlcov"
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
+target-version = "py311"
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
