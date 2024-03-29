@@ -19,8 +19,8 @@ It is also a simulator for Petri nets, so you can run your Petri net models and 
 
 Here is an example of a Petri net being used to model a simple pull-style production workflow.
 It models three stages, each with their own capacity.
-Stages interact by signaling demand for the product they are capable of producing,
-and by providing the product once work is done.
+Each stage signals demand for intermediate products they need,
+and provides products their own work is done.
 
 ![Code and simulator screenshot for a Petri net showing pull-style manufacturing workflow](docs/screenshots/pull-workflow-example.png)
 
